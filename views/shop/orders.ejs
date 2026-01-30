@@ -1,0 +1,22 @@
+<%- include('../partials/header') %>
+<div class="container mt-5">
+    <h2>My Order History</h2>
+    <table class="table">
+        <thead>
+            <tr><th>Date</th><th>Total</th><th>Status</th><th>Invoice</th></tr>
+        </thead>
+        <tbody>
+            <% orders.forEach(order => { %>
+            <tr>
+                <td><%= order.createdAt.toDateString() %></td>
+                <td>$<%= order.totalAmount %></td>
+                <td><span class="badge bg-success"><%= order.status %></span></td>
+                <td>
+                    <a href="/invoices/invoice-<%= order._id %>.pdf" class="btn btn-sm btn-outline-dark" download>Download PDF</a>
+                </td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</div>
+<%- include('../partials/footer') %>

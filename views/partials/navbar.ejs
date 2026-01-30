@@ -1,0 +1,57 @@
+<nav class="site-navbar">
+    <div class="navbar-container">
+        <div class="nav-left">
+            <a href="/" class="site-logo">ArtMarket</a>
+
+            <ul class="nav-links">
+                <li><a href="/" class="nav-link-item">Gallery</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-actions">
+            <!-- Wishlist & Cart always visible if space permits -->
+            <a href="/wishlist" class="nav-icon" title="Wishlist">
+                <i class="far fa-heart"></i>
+            </a>
+
+            <a href="/cart" class="nav-icon position-relative" title="Shopping Cart">
+                <i class="fas fa-shopping-cart"></i>
+                <% if(locals.cartCount> 0) { %>
+                    <span
+                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger badge-count">
+                        <%= cartCount %>
+                    </span>
+                    <% } %>
+            </a>
+
+            <!-- Auth State Links -->
+            <% if (!locals.isAuthenticated) { %>
+                <a href="/auth/login" class="nav-link-item">Login</a>
+                <a href="/auth/signup" class="btn btn-outline-light btn-sm rounded-pill px-3">Sign Up</a>
+                <% } else { %>
+                    <div class="user-dropdown">
+                        <button class="user-dropdown-btn">
+                            <i class="fas fa-user-circle"></i>
+                            <%= currentUser.username %> <i class="fas fa-chevron-down small"></i>
+                        </button>
+                        <div class="user-dropdown-content">
+                            <% if(currentUser.role==='Artist' ) { %>
+                                <a href="/artist/dashboard" class="dropdown-item"><i
+                                        class="fas fa-palette me-2"></i>Artist Studio</a>
+                                <% } else if(currentUser.role==='Admin' ) { %>
+                                    <a href="/admin/dashboard" class="dropdown-item"><i
+                                            class="fas fa-user-shield me-2"></i>Admin Panel</a>
+                                    <% } %>
+                                        <a href="/orders" class="dropdown-item"><i class="fas fa-box me-2"></i>My
+                                            Orders</a>
+                                        <a href="/wishlist" class="dropdown-item"><i
+                                                class="fas fa-heart me-2"></i>Wishlist</a>
+                                        <hr class="m-0 bg-secondary">
+                                        <a href="/auth/logout" class="dropdown-item text-danger"><i
+                                                class="fas fa-sign-out-alt me-2"></i>Logout</a>
+                        </div>
+                    </div>
+                    <% } %>
+        </div>
+    </div>
+</nav>

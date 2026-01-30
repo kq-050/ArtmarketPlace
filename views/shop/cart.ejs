@@ -1,0 +1,151 @@
+<%- include('../partials/header') %>
+
+    <div class="container mt-5 mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold">Your Masterpiece Collection <span class="badge bg-secondary rounded-pill">
+                    <%= cart.items.length %>
+                </span></h2>
+            <% if(cart.items.length> 0) { %>
+                <form action="/cart/clear" method="POST"
+                    onsubmit="return confirm('Full clear? Your curated selection will be lost.');">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Clear Gallery</button>
+                </form>
+                <% } %>
+        </div>
+
+        <% if(cart.items.length> 0) { %>
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th class="ps-4 py-3">Artwork</th>
+                                            <th class="py-3">Price</th>
+                                            <th class="py-3 text-end pe-4">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% cart.items.forEach(item=> { %>
+                                            <tr>
+                                                <td class="ps-4 py-4">
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="<%= item.imagePath %>" alt="<%= item.title %>"
+                                                            class="rounded shadow-sm"
+                                                            style="width: 80px; height: 80px; object-fit: cover;">
+                                                        <div class="ms-3">
+                                                            <h6 class="mb-0 fw-bold">
+                                                                <%= item.title %>
+                                                            </h6>
+                                                            <p class="text-muted small mb-0">Artist: <%= item.artist ?
+                                                                    item.artist.username : 'Unknown Artist' %>
+                                                            </p>
+                                                            <span class="badge bg-light text-dark border mt-1">
+                                                                <%= item.category %>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="py-4 fw-bold">$<%= item.price.toLocaleString() %>
+                                                </td>
+                                                <td class="py-4 text-end pe-4">
+                                                    <form action="/cart/remove/<%= item._id %>" method="POST"
+                                                        onsubmit="return confirm('Remove this piece from your collection?');">
+                                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                        <button type="submit" class="btn btn-link text-danger p-0">
+                                                            <i class="bi bi-trash3"></i> Remove
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                            <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="/" class="btn btn-link text-decoration-none px-0">
+                        <i class="bi bi-arrow-left"></i> Continue Exploring
+                    </a>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm sticky-top" style="top: 20px;">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-4">Order Summary</h5>
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Subtotal</span>
+                                <span class="fw-bold">$<%= cart.total.toLocaleString() %></span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-4">
+                                <span class="text-muted">Shipping</span>
+                                <span class="text-success small">Calculated at checkout</span>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <div class="d-flex justify-content-between mb-4">
+                                <span class="h5 fw-bold">Total</span>
+                                <span class="h5 fw-bold text-primary">$<%= cart.total.toLocaleString() %></span>
+                            </div>
+
+                            <form action="/create-checkout-session" method="POST">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                <button class="btn btn-primary btn-lg w-100 shadow-sm py-3 mb-3 fw-bold" type="submit">
+                                    Secure Checkout
+                                </button>
+                            </form>
+
+                            <div class="text-center">
+                                <img src="https://img.icons8.com/color/48/000000/visa.png" width="30">
+                                <img src="https://img.icons8.com/color/48/000000/mastercard.png" width="30"
+                                    class="ms-1">
+                                <img src="https://img.icons8.com/color/48/000000/stripe.png" width="40" class="ms-1">
+                                <p class="text-muted small mt-3 mb-0">
+                                    <i class="bi bi-shield-lock"></i> Encrypted Secure Payment
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% } else { %>
+                <div class="card border-0 shadow-sm py-5">
+                    <div class="card-body text-center py-5">
+                        <div class="display-1 text-muted mb-4">
+                            <i class="bi bi-cart-x"></i>
+                        </div>
+                        <h3 class="fw-bold">Your gallery is empty</h3>
+                        <p class="text-muted mb-4">Discover unique pieces that speak to you.</p>
+                        <a href="/" class="btn btn-primary btn-lg px-5">Start Exploring</a>
+                    </div>
+                </div>
+                <% } %>
+    </div>
+
+    <style>
+        .artwork-card:hover {
+            transform: translateY(-3px);
+            transition: 0.3s;
+        }
+
+        .btn-link {
+            text-decoration: none;
+        }
+
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
+        .table> :not(caption)>*>* {
+            border-bottom-width: 0.5px;
+            border-color: #f0f0f0;
+        }
+    </style>
+
+    <%- include('../partials/footer') %>

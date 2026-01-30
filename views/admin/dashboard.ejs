@@ -1,0 +1,207 @@
+<%- include('../partials/header') %>
+    <link rel="stylesheet" href="/css/admin-new.css">
+
+    <div class="admin-dashboard">
+        <div class="admin-header">
+            <h1 class="admin-title text-dark">Platform Overview</h1>
+            <p class="text-muted">Master control panel for the Art Marketplace</p>
+        </div>
+
+        <!-- Summary Statistics -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Revenue</div>
+                <div class="stat-value revenue">$<%= totalRevenue %>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Platform Profit</div>
+                <div class="stat-value profit">$<%= totalProfit %>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Artists</div>
+                <div class="stat-value">
+                    <%= artistCount %>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Users</div>
+                <div class="stat-value">
+                    <%= totalUsers %>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Masterpieces</div>
+                <div class="stat-value">
+                    <%= totalArtworks %>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Orders</div>
+                <div class="stat-value">
+                    <%= totalOrders %>
+                </div>
+            </div>
+        </section>
+
+        <div class="admin-content-grid">
+            <!-- Left Column: Pending Approvals -->
+            <div class="admin-column">
+                <section class="admin-section">
+                    <div class="admin-section-header">
+                        <h2 class="admin-section-title">Pending Artwork Approvals</h2>
+                        <span class="badge bg-warning text-dark">
+                            <%= pendingArtworks.length %> Pending
+                        </span>
+                    </div>
+                    <div class="admin-table-container">
+                        <% if(pendingArtworks.length> 0) { %>
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Preview</th>
+                                        <th>Title</th>
+                                        <th>Artist</th>
+                                        <th>Price</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% pendingArtworks.forEach(art=> { %>
+                                        <tr>
+                                            <td><img src="<%= art.imagePath %>" class="artwork-preview shadow-sm"
+                                                    alt="Preview"></td>
+                                            <td><strong>
+                                                    <%= art.title %>
+                                                </strong></td>
+                                            <td>
+                                                <%= art.artist.username %>
+                                            </td>
+                                            <td>$<%= art.price %>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex gap-2">
+                                                    <form action="/admin/approve/<%= art._id %>" method="POST">
+                                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                        <button type="submit" class="admin-btn btn-approve">
+                                                            <i class="fas fa-check"></i> Approve
+                                                        </button>
+                                                    </form>
+                                                    <button class="admin-btn btn-reject" type="button"
+                                                        data-bs-toggle="collapse"
+                                                        data-bs-target="#reject<%= art._id %>">
+                                                        <i class="fas fa-times"></i> Reject
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="collapse" id="reject<%= art._id %>">
+                                            <td colspan="5" class="p-0">
+                                                <div class="reject-form">
+                                                    <form action="/admin/reject/<%= art._id %>" method="POST"
+                                                        class="d-flex gap-2">
+                                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                                        <input type="text" name="remarks" class="admin-input"
+                                                            placeholder="Reason for rejection..." required>
+                                                        <button type="submit"
+                                                            class="admin-btn btn-danger text-white">Confirm</button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <% }) %>
+                                </tbody>
+                            </table>
+                            <% } else { %>
+                                <div class="p-5 text-center text-muted">
+                                    <i class="fas fa-check-circle fa-3x mb-3"></i>
+                                    <p>All clear! No artworks awaiting approval.</p>
+                                </div>
+                                <% } %>
+                    </div>
+                </section>
+
+                <section class="admin-section">
+                    <div class="admin-section-header">
+                        <h2 class="admin-section-title">Revenue Trends</h2>
+                    </div>
+                    <div class="p-4" style="background: white;">
+                        <canvas id="salesChart" height="100"></canvas>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Controls & Reports -->
+            <div class="admin-column">
+                <section class="admin-section mb-4">
+                    <div class="admin-section-header">
+                        <h2 class="admin-section-title">Quick Actions</h2>
+                    </div>
+                    <div class="p-4">
+                        <a href="/admin/report/export"
+                            class="admin-btn btn-action-primary w-100 mb-3 justify-content-center py-3">
+                            <i class="fas fa-download"></i> Export Sales Data (CSV)
+                        </a>
+                        <a href="/admin/artists"
+                            class="admin-btn bg-secondary text-white w-100 justify-content-center py-3">
+                            <i class="fas fa-users"></i> Manage Artist Accounts
+                        </a>
+                    </div>
+                </section>
+
+                <section class="admin-section">
+                    <div class="admin-section-header">
+                        <h2 class="admin-section-title">Financial Settings</h2>
+                    </div>
+                    <div class="p-4">
+                        <form action="/admin/update-commission" method="POST">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <label class="text-muted small fw-bold mb-2 d-block">Platform Commission (%)</label>
+                            <div class="d-flex gap-2">
+                                <input type="number" name="commissionRate" class="admin-input"
+                                    value="<%= currentCommission %>" min="0" max="100">
+                                <button type="submit" class="admin-btn btn-action-primary">Update</button>
+                            </div>
+                            <p class="text-muted small mt-2 italic">Affects all new transactions immediately.</p>
+                        </form>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        const salesData = JSON.parse('<%- monthlySales %>');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Monthly Revenue ($)',
+                    data: salesData,
+                    borderColor: '#3b82f6',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    </script>
+
+    <%- include('../partials/footer') %>

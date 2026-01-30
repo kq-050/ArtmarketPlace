@@ -1,0 +1,40 @@
+<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse shadow" style="min-height: 100vh;">
+    <div class="position-sticky pt-3">
+        <div class="text-center mb-4">
+            <div class="bg-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+                <i class="fas fa-paint-brush fa-lg text-dark"></i>
+            </div>
+            <h6 class="text-white mt-2"><%= typeof currentUser !== 'undefined' ? currentUser.username : 'Artist' %></h6>
+            <span class="badge bg-secondary">Artist Account</span>
+        </div>
+        <hr class="text-secondary">
+        <ul class="nav flex-column px-2">
+            <li class="nav-item mb-2">
+                <a class="nav-link text-white rounded hover-bg-light" href="/artist/dashboard">
+                    <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link text-white rounded hover-bg-light" href="/artist/add-artwork">
+                    <i class="fas fa-plus-circle me-2"></i> Upload New Art
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link text-secondary" href="#" title="Feature coming soon">
+                    <i class="fas fa-chart-bar me-2"></i> Analytics (Soon)
+                </a>
+            </li>
+        </ul>
+        
+        <div class="mt-5 px-3">
+            <a href="/auth/logout" class="btn btn-outline-light btn-sm w-100">
+                <i class="fas fa-sign-out-alt me-2"></i> Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+<style>
+    /* Add this small style to make hover look pro */
+    .nav-link:hover { background-color: rgba(255,255,255,0.1); }
+</style>

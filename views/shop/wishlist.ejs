@@ -1,0 +1,132 @@
+<%- include('../partials/header') %>
+
+    <div class="container py-5">
+        <!-- Header Section -->
+        <div class="row mb-5 align-items-end">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold mb-2">My Wishlist</h1>
+                <p class="text-muted lead mb-0">Manage your saved masterpieces and collection favorites.</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <span class="badge bg-dark rounded-pill px-3 py-2">
+                    <%= artworks.length %>
+                        <%= artworks.length===1 ? 'Item' : 'Items' %>
+                </span>
+            </div>
+        </div>
+
+        <% if(artworks.length> 0) { %>
+            <div class="row g-4">
+                <% artworks.forEach(art=> { %>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100 border-0 shadow-sm hover-up overflow-hidden">
+                            <!-- Artwork Image -->
+                            <div class="wishlist-img-wrapper position-relative">
+                                <a href="/artwork/<%= art._id %>">
+                                    <img src="<%= art.imagePath %>" class="card-img-top" alt="<%= art.title %>"
+                                        style="height: 300px; object-fit: cover;">
+                                </a>
+                                <!-- Remove Button -->
+                                <form action="/wishlist" method="POST" class="position-absolute top-0 end-0 p-3">
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                    <input type="hidden" name="artworkId" value="<%= art._id %>">
+                                    <button type="submit" class="btn btn-white btn-sm rounded-circle shadow-sm"
+                                        title="Remove from Wishlist">
+                                        <i class="fas fa-trash-alt text-danger"></i>
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- Card Body -->
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h5 class="fw-bold mb-1">
+                                            <%= art.title %>
+                                        </h5>
+                                        <p class="text-muted small mb-0">By <span class="text-dark fw-semibold">
+                                                <%= art.artist ? art.artist.username : 'Unknown Artist' %>
+                                            </span></p>
+                                    </div>
+                                    <div class="text-primary fw-bold h5 mb-0">$<%= art.price %>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <span class="badge bg-light text-secondary border px-2 py-1">
+                                        <%= art.category %>
+                                    </span>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="d-grid gap-2">
+                                    <form action="/wishlist/move-to-cart" method="POST">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                        <input type="hidden" name="artworkId" value="<%= art._id %>">
+                                        <button type="submit" class="btn btn-dark w-100 py-2">
+                                            <i class="fas fa-cart-plus me-2"></i> Move to Cart
+                                        </button>
+                                    </form>
+                                    <a href="/artwork/<%= art._id %>" class="btn btn-outline-secondary w-100 py-2">
+                                        View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% }) %>
+            </div>
+            <% } else { %>
+                <!-- Empty State -->
+                <div class="text-center py-5 mt-5">
+                    <div class="display-1 text-light mb-4">
+                        <i class="far fa-heart"></i>
+                    </div>
+                    <h3 class="fw-bold">Your Wishlist is Empty</h3>
+                    <p class="text-muted mx-auto mb-4" style="max-width: 450px;">
+                        Find something you love? Save it to your wishlist and come back to it later.
+                    </p>
+                    <a href="/" class="btn btn-primary btn-lg rounded-pill px-5">Explore Gallery</a>
+                </div>
+                <% } %>
+    </div>
+
+    <style>
+        .hover-up {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+        }
+
+        .hover-up:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .wishlist-img-wrapper {
+            overflow: hidden;
+        }
+
+        .wishlist-img-wrapper img {
+            transition: transform 0.6s ease;
+        }
+
+        .wishlist-img-wrapper:hover img {
+            transform: scale(1.05);
+        }
+
+        .btn-white {
+            background: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-white:hover {
+            background: #f8f9fa;
+            transform: scale(1.1);
+        }
+    </style>
+
+    <%- include('../partials/footer') %>

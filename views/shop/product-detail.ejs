@@ -1,0 +1,88 @@
+<%- include('../partials/header') %>
+
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-md-6 mb-4">
+                <div class="p-3 bg-white shadow-sm rounded">
+                    <img src="<%= artwork.imagePath %>" class="img-fluid rounded" alt="<%= artwork.title %>">
+                </div>
+            </div>
+
+            <div class="col-md-5 offset-md-1">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item active">
+                            <%= artwork.category %>
+                        </li>
+                    </ol>
+                </nav>
+
+                <h1 class="display-4 fw-bold">
+                    <%= artwork.title %>
+                </h1>
+                <p class="text-muted fs-5">Created by <span class="text-dark fw-bold">
+                        <%= artwork.artist.username %>
+                    </span></p>
+
+                <div class="my-4">
+                    <span class="display-5 text-warning fw-bold">$<%= artwork.price %></span>
+                </div>
+
+                <p class="lead">
+                    <%= artwork.description %>
+                </p>
+
+                <div class="card bg-light border-0 mb-4">
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><strong>Medium:</strong>
+                                <%= artwork.medium %>
+                            </li>
+                            <li class="mb-2"><strong>Dimensions:</strong>
+                                <%= artwork.dimensions %>
+                            </li>
+                            <li><strong>Status:</strong>
+                                <% if(artwork.status==='Sold' ) { %>
+                                    <span class="badge bg-danger">Sold Out</span>
+                                    <% } else { %>
+                                        <span class="badge bg-success">Available</span>
+                                        <% } %>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <% if(artwork.status !=='Sold' ) { %>
+                    <div class="d-flex gap-2">
+                        <form action="/cart/add" method="POST" class="flex-grow-1">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <input type="hidden" name="artworkId" value="<%= artwork._id %>">
+                            <button type="submit" class="btn btn-primary btn-lg w-100 py-3 shadow">
+                                <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                            </button>
+                        </form>
+
+                        <% if(isAuthenticated) { %>
+                            <form action="/wishlist" method="POST">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                <input type="hidden" name="artworkId" value="<%= artwork._id %>">
+                                <button type="submit" class="btn btn-outline-danger btn-lg py-3 px-4 shadow-sm">
+                                    <% if(currentUser.wishlist && currentUser.wishlist.some(id=> id.toString() ===
+                                        artwork._id.toString())) { %>
+                                        <i class="fas fa-heart"></i>
+                                        <% } else { %>
+                                            <i class="far fa-heart"></i>
+                                            <% } %>
+                                </button>
+                            </form>
+                            <% } %>
+                    </div>
+                    <% } else { %>
+                        <button class="btn btn-secondary btn-lg w-100 py-3" disabled>Item Sold</button>
+                        <% } %>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>

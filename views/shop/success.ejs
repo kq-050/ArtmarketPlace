@@ -1,0 +1,22 @@
+<%- include('../partials/header') %>
+
+<div class="row mt-5">
+    <div class="col-md-6 m-auto text-center">
+        <div class="card card-body">
+            <h1 class="text-success display-4">Thank You!</h1>
+            <p class="lead">Your payment has been processed successfully.</p>
+            <hr>
+            <p>Your order has been confirmed.</p>
+            
+            <% if(typeof invoiceLink !== 'undefined') { %>
+                <a href="<%= invoiceLink %>" class="btn btn-primary btn-lg mt-3" download>
+                    Download Invoice (PDF)
+                </a>
+            <% } %>
+            
+            <a href="/" class="btn btn-secondary mt-3">Continue Shopping</a>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>
