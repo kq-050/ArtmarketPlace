@@ -1,4 +1,6 @@
 require('dotenv').config();
+console.log('--- STARTUP: App Initializing ---');
+console.log('NODE_ENV:', process.env.NODE_ENV);
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
@@ -25,11 +27,12 @@ if (!MONGODB_URI) {
 }
 
 // --- DATABASE CONNECTION ---
+console.log('Attempting to connect to MongoDB...');
 mongoose.connect(MONGODB_URI)
     .then(() => console.log('Database Connected Successfully'))
     .catch(err => {
-        console.error('Database Connection Error:', err);
-        // Don't crash the entire process, but the app will likely fail on DB-dependent routes
+        console.error('DATABASE CONNECTION ERROR:', err.message);
+        console.error(err.stack);
     });
 
 // --- VIEW ENGINE ---
@@ -106,15 +109,45 @@ app.use('/admin', adminRoutes);
 app.use('/artist', artistRoutes);
 app.use('/', shopRoutes);
 
+// --- DEBUG ROUTE FOR VERCEL ---
+app.get('/debug-paths', (req, res) => {
+    const fs = require('fs');
+    const viewsPath = app.get('views');
+    const exists = fs.existsSync(viewsPath);
+    const files = exists ? fs.readdirSync(viewsPath) : [];
+    res.json({
+        cwd: process.cwd(),
+        dirname: __dirname,
+        viewsPath: viewsPath,
+        viewsExist: exists,
+        viewsFiles: files,
+        env: process.env.NODE_ENV
+    });
+});
+
 // --- ERROR HANDLING MIDDLEWARE ---
 app.use((err, req, res, next) => {
     console.error('Unhandled Error:', err);
-    console.log('Current working directory:', process.cwd());
-    console.log('Views directory setting:', app.get('views'));
-    res.status(500).render('error', {
+
+    const errorData = {
         message: 'Something went wrong on our end.',
         error: process.env.NODE_ENV !== 'production' ? err : {},
         pageTitle: 'Error'
+    };
+
+    // Try to render the error page
+    res.status(500).render('error', errorData, (renderErr, html) => {
+        if (renderErr) {
+            // If the view lookup fails again, send as JSON/Text so we can see the REAL error
+            console.error('View Render Failed:', renderErr);
+            return res.status(500).send(`
+                <h1>Internal Server Error</h1>
+                <p>The error page failed to load, but here is the original error:</p>
+                <pre>${err.message}</pre>
+                <p>View Lookup Error: ${renderErr.message}</p>
+            `);
+        }
+        res.send(html);
     });
 });
 
