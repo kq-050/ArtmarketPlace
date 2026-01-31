@@ -16,6 +16,13 @@ const artistRoutes = require('./routes/artistRoutes');
 const shopRoutes = require('./routes/shopRoutes');
 
 const app = express();
+// VERIFICATION MIDDLEWARE - Check if this shows up at your-site.com/?check=1
+app.use((req, res, next) => {
+    if (req.query.check === '1') {
+        return res.send('DEPLOYMENT_VERIFIED_V4_LINE_112_FIX');
+    }
+    next();
+});
 const User = require('./models/User');
 
 const MONGODB_URI = process.env.MONGODB_URI;
