@@ -34,7 +34,7 @@ mongoose.connect(MONGODB_URI)
 
 // --- VIEW ENGINE ---
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(process.cwd(), 'views'));
 
 // --- STRIPE WEBHOOK ---
 app.post('/webhook', express.raw({ type: 'application/json' }), webhookController.handleWebhook);
@@ -44,7 +44,7 @@ app.use(helmet({ contentSecurityPolicy: false }));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(process.cwd(), 'public')));
 
 // --- SESSION, CSRF & FLASH HANDLING ---
 const sessionOptions = {
@@ -109,6 +109,8 @@ app.use('/', shopRoutes);
 // --- ERROR HANDLING MIDDLEWARE ---
 app.use((err, req, res, next) => {
     console.error('Unhandled Error:', err);
+    console.log('Current working directory:', process.cwd());
+    console.log('Views directory setting:', app.get('views'));
     res.status(500).render('error', {
         message: 'Something went wrong on our end.',
         error: process.env.NODE_ENV !== 'production' ? err : {},
