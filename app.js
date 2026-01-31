@@ -18,10 +18,19 @@ const User = require('./models/User');
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
+if (!MONGODB_URI) {
+    console.error('CRITICAL ERROR: MONGODB_URI is not defined in environment variables.');
+    // In serverless, we don't want to process.exit(1) as it kills the instance, 
+    // but the app won't work anyway. We'll let it throw so Vercel captures the log.
+}
+
 // --- DATABASE CONNECTION ---
 mongoose.connect(MONGODB_URI)
     .then(() => console.log('Database Connected Successfully'))
-    .catch(err => console.error('Database Connection Error:', err));
+    .catch(err => {
+        console.error('Database Connection Error:', err);
+        // Don't crash the entire process, but the app will likely fail on DB-dependent routes
+    });
 
 // --- VIEW ENGINE ---
 app.set('view engine', 'ejs');
@@ -38,45 +47,38 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // --- SESSION, CSRF & FLASH HANDLING ---
-if (process.env.NODE_ENV !== 'production') {
-    // Development: Sessions, CSRF & Flash enabled
-    app.use(session({
-        secret: process.env.SESSION_SECRET || 'fallbackSecretKey',
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-            httpOnly: true,
-            secure: false, // localhost is not https in dev usually
-            maxAge: 1000 * 60 * 60 * 24 // 24 hours
-        }
-    }));
+const sessionOptions = {
+    secret: process.env.SESSION_SECRET || 'fallbackSecretKey',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // true if on HTTPS (Vercel)
+        maxAge: 1000 * 60 * 60 * 24 // 24 hours
+    }
+};
 
-    // Flash messages MUST be after session
-    app.use(flash());
+app.use(session(sessionOptions));
+app.use(flash());
 
-    const csrfProtection = csrf();
-    app.use((req, res, next) => {
-        // Skip CSRF for webhook & specific POST routes if needed
-        const skipRoutes = ['/webhook', '/artist/add-artwork'];
-        if (skipRoutes.includes(req.path) && req.method === 'POST') {
-            return next();
-        }
-        csrfProtection(req, res, next);
-    });
-} else {
-    // Production: Sessions, CSRF and Flash disabled for serverless (Vercel)
-    // Note: If you need these in production, enable them with a persistent store.
-    console.log('Production mode: Session, CSRF & Flash disabled for serverless optimization.');
-}
+const csrfProtection = csrf();
+app.use((req, res, next) => {
+    // Skip CSRF for webhook & specific POST routes
+    const skipRoutes = ['/webhook', '/artist/add-artwork'];
+    if (skipRoutes.includes(req.path) && req.method === 'POST') {
+        return next();
+    }
+    csrfProtection(req, res, next);
+});
 
 // --- GLOBAL VARIABLES & DATA INITIALIZATION ---
 app.use((req, res, next) => {
     // 1. Safe access to session-based data
     const session = req.session || {};
 
-    // 2. Initialize isLoggedIn if undefined (and session exists)
-    if (req.session && typeof req.session.isLoggedIn === 'undefined') {
-        req.session.isLoggedIn = false;
+    // 2. Initialize isLoggedIn if undefined
+    if (typeof session.isLoggedIn === 'undefined') {
+        session.isLoggedIn = false;
     }
 
     // 3. Set locals for views
@@ -91,7 +93,7 @@ app.use((req, res, next) => {
     res.locals.searchQuery = req.query.search || '';
     res.locals.selectedCategory = req.query.category || 'All';
 
-    // 6. Flash messages safely (req.flash only exists if flash middleware is active)
+    // 6. Flash messages safely
     res.locals.success_msg = (typeof req.flash === 'function') ? req.flash('success_msg') : [];
     res.locals.error_msg = (typeof req.flash === 'function') ? req.flash('error_msg') : [];
 
