@@ -11,6 +11,7 @@ const path = require('path');
 const session = require('express-session');
 const flash = require('connect-flash');
 const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
 
 let doubleCsrf;
 try {
@@ -71,6 +72,7 @@ app.use(helmet({ contentSecurityPolicy: false }));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser(process.env.SESSION_SECRET || 'fallbackSecretKey'));
 app.use(express.static(path.join(process.cwd(), 'public')));
 
 // --- SESSION, CSRF & FLASH HANDLING ---
