@@ -64,7 +64,11 @@ exports.getIndex = async (req, res) => {
 
     } catch (err) {
         console.error(err);
-        res.redirect('/');
+        res.status(500).render('error', {
+            message: 'Something went wrong while loading the gallery.',
+            error: err,
+            pageTitle: 'Error'
+        });
     }
 };
 
