@@ -1,6 +1,9 @@
 {
   "name": "artmarketplace",
   "version": "1.0.0",
+  "engines": {
+    "node": "18.x"
+  },
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -14,7 +17,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "connect-flash": "^0.1.1",
-    "csurf": "^1.11.0",
+    "csrf-csrf": "^3.0.8",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.19.2",

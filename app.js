@@ -7,7 +7,7 @@ const path = require('path');
 const session = require('express-session');
 const flash = require('connect-flash');
 const helmet = require('helmet');
-const csrf = require('csurf');
+const { doubleCsrf } = require('csrf-csrf');
 const webhookController = require('./controllers/webhookController');
 
 const authRoutes = require('./routes/authRoutes');
@@ -71,14 +71,31 @@ const sessionOptions = {
 app.use(session(sessionOptions));
 app.use(flash());
 
-const csrfProtection = csrf();
+// --- CSRF PROTECTION ---
+const {
+    invalidCsrfTokenError, // This is just for error checking
+    generateToken, // Use this for the token
+    doubleCsrfProtection, // This is the middleware
+} = doubleCsrf({
+    getSecret: (req) => process.env.SESSION_SECRET || 'fallbackSecretKey',
+    cookieName: 'x-csrf-token',
+    cookieOptions: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+    },
+    size: 64,
+    ignoredMethods: ['GET', 'HEAD', 'OPTIONS'],
+});
+
 app.use((req, res, next) => {
     // Skip CSRF for webhook & specific POST routes
     const skipRoutes = ['/webhook', '/artist/add-artwork'];
     if (skipRoutes.includes(req.path) && req.method === 'POST') {
         return next();
     }
-    csrfProtection(req, res, next);
+    doubleCsrfProtection(req, res, next);
 });
 
 // --- GLOBAL VARIABLES & DATA INITIALIZATION ---
@@ -96,7 +113,7 @@ app.use((req, res, next) => {
     res.locals.currentUser = session.user || null;
 
     // 4. Safe CSRF token injection
-    res.locals.csrfToken = (typeof req.csrfToken === 'function') ? req.csrfToken() : null;
+    res.locals.csrfToken = (typeof generateToken === 'function') ? generateToken(req, res) : null;
 
     // 5. Shared data safely
     res.locals.cartCount = Array.isArray(session.cart?.items) ? session.cart.items.length : 0;
