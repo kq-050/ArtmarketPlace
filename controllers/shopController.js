@@ -63,12 +63,9 @@ exports.getIndex = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        res.status(500).render('error', {
-            message: 'Something went wrong while loading the gallery.',
-            error: err,
-            pageTitle: 'Error'
-        });
+        console.error('Gallery Load Error:', err);
+        // Throw to the central error handler
+        next(err);
     }
 };
 

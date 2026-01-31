@@ -136,25 +136,37 @@ app.get('/debug-paths', (req, res) => {
 app.use((err, req, res, next) => {
     console.error('Unhandled Error:', err);
 
-    const errorData = {
-        message: 'Something went wrong on our end.',
-        error: process.env.NODE_ENV !== 'production' ? err : {},
-        pageTitle: 'Error'
-    };
+    // Check if headers are already sent to avoid double response
+    if (res.headersSent) {
+        return next(err);
+    }
 
-    // Try to render the error page
-    res.status(500).render('error', errorData, (renderErr, html) => {
-        if (renderErr) {
-            // If the view lookup fails again, send as JSON/Text so we can see the REAL error
-            console.error('View Render Failed:', renderErr);
-            return res.status(500).send(`
-                <h1>Internal Server Error</h1>
-                <p>The error page failed to load, but here is the original error:</p>
-                <pre>${err.message}</pre>
-                <p>View Lookup Error: ${renderErr.message}</p>
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    res.status(500).format({
+        // 1. JSON response for API or AJAX
+        'application/json': () => {
+            res.json({
+                error: 'Internal Server Error',
+                message: isProduction ? 'Something went wrong.' : err.message
+            });
+        },
+        // 2. Simple HTML string for browsers to avoid view lookup issues
+        'text/html': () => {
+            res.send(`
+                <div style="font-family: sans-serif; padding: 20px; text-align: center;">
+                    <h1 style="color: #dc3545;">Oops! Something went wrong.</h1>
+                    <p>${isProduction ? 'A server error occurred. Please try again later.' : err.message}</p>
+                    ${!isProduction ? `<pre style="text-align: left; background: #f8f9fa; padding: 15px; border-radius: 5px;">${err.stack}</pre>` : ''}
+                    <hr>
+                    <a href="/" style="display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px;">Return to Gallery</a>
+                </div>
             `);
+        },
+        // 3. Fallback
+        'default': () => {
+            res.type('txt').send('Internal Server Error');
         }
-        res.send(html);
     });
 });
 
