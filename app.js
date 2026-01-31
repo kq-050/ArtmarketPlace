@@ -1,5 +1,5 @@
 require('dotenv').config();
-console.log('--- STARTUP: App Initializing ---');
+console.log('--- STARTUP: App Initializing (DEPLOY_ID: V3_FINAL_FIX) ---');
 console.log('NODE_ENV:', process.env.NODE_ENV);
 const express = require('express');
 const mongoose = require('mongoose');
