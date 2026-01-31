@@ -25,8 +25,7 @@ exports.postSignup = async (req, res) => {
             username,
             email,
             password,
-            pageTitle: 'Sign Up',
-            csrfToken: req.csrfToken() // Ensure token is passed back if rendering directly
+            pageTitle: 'Sign Up'
         });
     } else {
         try {
@@ -40,8 +39,7 @@ exports.postSignup = async (req, res) => {
                     username,
                     email,
                     password,
-                    pageTitle: 'Sign Up',
-                    csrfToken: req.csrfToken()
+                    pageTitle: 'Sign Up'
                 });
             }
 

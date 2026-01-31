@@ -2,7 +2,7 @@
   "name": "artmarketplace",
   "version": "1.0.0",
   "engines": {
-    "node": "18.x"
+    "node": "20.x"
   },
   "main": "app.js",
   "scripts": {

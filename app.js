@@ -1,19 +1,34 @@
 require('dotenv').config();
-console.log('--- STARTUP: App Initializing (DEPLOY_ID: V3_FINAL_FIX) ---');
-console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('--- VERCEL DIAGNOSTICS START ---');
+console.log('CWD:', process.cwd());
+console.log('NODE_VERSION:', process.version);
+console.log('ENV: MONGODB_URI exists:', !!process.env.MONGODB_URI);
+console.log('ENV: SESSION_SECRET exists:', !!process.env.SESSION_SECRET);
+
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const session = require('express-session');
 const flash = require('connect-flash');
 const helmet = require('helmet');
-const { doubleCsrf } = require('csrf-csrf');
+
+let doubleCsrf;
+try {
+    const csrfModule = require('csrf-csrf');
+    doubleCsrf = csrfModule.doubleCsrf;
+    console.log('CSRF-CSRF module loaded successfully');
+} catch (e) {
+    console.error('CRITICAL: Failed to load csrf-csrf:', e.message);
+}
+
 const webhookController = require('./controllers/webhookController');
+console.log('Controllers loaded');
 
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const artistRoutes = require('./routes/artistRoutes');
 const shopRoutes = require('./routes/shopRoutes');
+console.log('Routes loaded');
 
 const app = express();
 // VERIFICATION MIDDLEWARE - Check if this shows up at your-site.com/?check=1
@@ -44,7 +59,9 @@ mongoose.connect(MONGODB_URI)
 
 // --- VIEW ENGINE ---
 app.set('view engine', 'ejs');
-app.set('views', path.join(process.cwd(), 'views'));
+const resolvedViewsPath = path.join(process.cwd(), 'views');
+console.log('Setting views to:', resolvedViewsPath);
+app.set('views', resolvedViewsPath);
 
 // --- STRIPE WEBHOOK ---
 app.post('/webhook', express.raw({ type: 'application/json' }), webhookController.handleWebhook);
@@ -72,22 +89,32 @@ app.use(session(sessionOptions));
 app.use(flash());
 
 // --- CSRF PROTECTION ---
-const {
-    invalidCsrfTokenError, // This is just for error checking
-    generateToken, // Use this for the token
-    doubleCsrfProtection, // This is the middleware
-} = doubleCsrf({
-    getSecret: (req) => process.env.SESSION_SECRET || 'fallbackSecretKey',
-    cookieName: 'x-csrf-token',
-    cookieOptions: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-    },
-    size: 64,
-    ignoredMethods: ['GET', 'HEAD', 'OPTIONS'],
-});
+let doubleCsrfProtection = (req, res, next) => next();
+let generateToken = () => null;
+
+if (doubleCsrf) {
+    try {
+        const csrfConfig = doubleCsrf({
+            getSecret: (req) => process.env.SESSION_SECRET || 'fallbackSecretKey',
+            cookieName: 'x-csrf-token',
+            cookieOptions: {
+                httpOnly: true,
+                sameSite: 'lax',
+                path: '/',
+                secure: process.env.NODE_ENV === 'production',
+            },
+            size: 64,
+            ignoredMethods: ['GET', 'HEAD', 'OPTIONS'],
+        });
+        doubleCsrfProtection = csrfConfig.doubleCsrfProtection;
+        generateToken = csrfConfig.generateToken;
+        console.log('CSRF protection initialized');
+    } catch (e) {
+        console.error('Failed to initialize CSRF protection:', e.message);
+    }
+} else {
+    console.warn('CSRF protection skipped due to missing module');
+}
 
 app.use((req, res, next) => {
     // Skip CSRF for webhook & specific POST routes
