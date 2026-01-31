@@ -107,6 +107,7 @@ if (doubleCsrf) {
             },
             size: 64,
             ignoredMethods: ['GET', 'HEAD', 'OPTIONS'],
+            getTokenFromRequest: (req) => req.body._csrf, // Look for _csrf in the body
         });
         doubleCsrfProtection = csrfConfig.doubleCsrfProtection;
         generateToken = csrfConfig.generateToken;
