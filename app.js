@@ -34,7 +34,7 @@ mongoose.connect(MONGODB_URI)
 
 // --- VIEW ENGINE ---
 app.set('view engine', 'ejs');
-app.set('views', 'views');
+app.set('views', path.join(__dirname, 'views'));
 
 // --- STRIPE WEBHOOK ---
 app.post('/webhook', express.raw({ type: 'application/json' }), webhookController.handleWebhook);
