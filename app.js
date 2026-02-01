@@ -23,7 +23,7 @@ try {
 }
 
 const webhookController = require('./controllers/webhookController');
-const { MongoStore } = require('connect-mongo');
+const MongoStore = require('connect-mongo');
 console.log('Controllers loaded');
 
 const authRoutes = require('./routes/authRoutes');
@@ -98,53 +98,8 @@ const sessionOptions = {
     }
 };
 
-const isProduction = process.env.NODE_ENV === 'production';
-
-if (!isProduction) {
-    app.use(session(sessionOptions));
-} else {
-    // Session Shim for Production (Vercel)
-    app.use((req, res, next) => {
-        // Initialize req.session as a plain object since we aren't using express-session
-        if (!req.session) req.session = {};
-
-        // Populate user from signed cookie
-        if (req.signedCookies && req.signedCookies.auth_user) {
-            req.session.user = req.signedCookies.auth_user;
-            req.session.isLoggedIn = true;
-        } else {
-            req.session.isLoggedIn = false;
-        }
-
-        // Shim flash for production (so calls don't crash)
-        if (typeof req.flash !== 'function') {
-            req.flash = (type, msg) => {
-                if (msg) {
-                    if (!req.session.flash) req.session.flash = {};
-                    if (!req.session.flash[type]) req.session.flash[type] = [];
-                    req.session.flash[type].push(msg);
-                } else {
-                    const messages = (req.session.flash && req.session.flash[type]) || [];
-                    if (req.session.flash) delete req.session.flash[type];
-                    return messages;
-                }
-            };
-        }
-
-        // Shim session.destroy
-        req.session.destroy = (cb) => {
-            req.session = {};
-            if (cb) cb();
-        };
-
-        // Shim session.save
-        req.session.save = (cb) => {
-            if (cb) cb();
-        };
-
-        next();
-    });
-}
+// Use MongoStore for persistent sessions (works in both dev and Vercel production)
+app.use(session(sessionOptions));
 app.use(flash());
 
 // --- CSRF PROTECTION ---
