@@ -23,6 +23,7 @@ try {
 }
 
 const webhookController = require('./controllers/webhookController');
+const MongoStore = require('connect-mongo');
 console.log('Controllers loaded');
 
 const authRoutes = require('./routes/authRoutes');
@@ -32,6 +33,11 @@ const shopRoutes = require('./routes/shopRoutes');
 console.log('Routes loaded');
 
 const app = express();
+
+// --- VERCEL PROXY TRUST ---
+// Trust Vercel's proxy to allow secure cookies
+app.set('trust proxy', 1);
+
 // VERIFICATION MIDDLEWARE - Check if this shows up at your-site.com/?check=1
 app.use((req, res, next) => {
     if (req.query.check === '1') {
@@ -80,6 +86,11 @@ const sessionOptions = {
     secret: process.env.SESSION_SECRET || 'fallbackSecretKey',
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGODB_URI,
+        collectionName: 'sessions',
+        ttl: 24 * 60 * 60 // 1 day
+    }),
     cookie: {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // true if on HTTPS (Vercel)
