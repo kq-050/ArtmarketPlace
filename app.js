@@ -23,7 +23,7 @@ try {
 }
 
 const webhookController = require('./controllers/webhookController');
-const MongoStore = require('connect-mongo');
+const MongoStore = require('connect-mongo').default;
 console.log('Controllers loaded');
 
 const authRoutes = require('./routes/authRoutes');
