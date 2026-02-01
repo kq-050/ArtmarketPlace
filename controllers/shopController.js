@@ -4,7 +4,7 @@ const User = require('../models/User');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 // FR-01: Display Artwork on Homepage
-exports.getIndex = async (req, res) => {
+exports.getIndex = async (req, res, next) => {
     try {
         const { search, category, sort, page = 1, limit = 9 } = req.query;
         const currentPage = parseInt(page);
