@@ -100,6 +100,8 @@ exports.postLogin = async (req, res) => {
         };
         req.session.isLoggedIn = true; // Explicitly set this too
         console.log('Session created for:', user.role);
+        console.log('Session ID after login:', req.sessionID);
+        console.log('User ID in session:', req.session.user._id);
 
         // 4. Redirect based on Role (RBAC)
         let targetUrl = '/';

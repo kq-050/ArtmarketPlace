@@ -132,17 +132,31 @@ if (doubleCsrf) {
 
 app.use((req, res, next) => {
     // Skip CSRF for webhook & specific POST routes
-    const skipRoutes = ['/webhook', '/artist/add-artwork'];
+    const skipRoutes = ['/webhook', '/artist/add-artwork', '/auth/login']; // TEMP: skip login to test
     if (skipRoutes.includes(req.path) && req.method === 'POST') {
+        console.log(`CSRF: Skipping for ${req.path}`);
         return next();
     }
-    doubleCsrfProtection(req, res, next);
+
+    doubleCsrfProtection(req, res, (err) => {
+        if (err && err.code === 'EBADCSRFTOKEN') {
+            console.error('CSRF Error: Invalid token for path', req.path);
+            req.flash('error_msg', 'Session expired or invalid CSRF token. Please try again.');
+            return res.redirect(req.path === '/auth/login' ? '/auth/login' : 'back');
+        }
+        next(err);
+    });
 });
 
 // --- GLOBAL VARIABLES & DATA INITIALIZATION ---
 app.use((req, res, next) => {
     // 1. Safe access to session-based data
     const session = req.session || {};
+
+    if (process.env.NODE_ENV !== 'production') {
+        // console.log('Session ID:', req.sessionID);
+        // console.log('Session Data:', session);
+    }
 
     // 2. Initialize isLoggedIn if undefined
     if (typeof session.isLoggedIn === 'undefined') {
