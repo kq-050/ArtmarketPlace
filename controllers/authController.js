@@ -123,6 +123,7 @@ exports.postLogin = async (req, res) => {
                 });
             }
 
+            console.log('DEBUG: Final targetUrl before redirect:', targetUrl);
             console.log('Session saved, redirecting to:', targetUrl);
             return res.redirect(targetUrl);
         });
