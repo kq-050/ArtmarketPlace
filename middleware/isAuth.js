@@ -1,6 +1,6 @@
 module.exports = {
     ensureAuthenticated: function (req, res, next) {
-        if (req.session && req.session.user) {
+        if ((req.session && req.session.user) || (req.signedCookies && req.signedCookies.auth_user)) {
             return next();
         }
         if (typeof req.flash === 'function') {
@@ -9,7 +9,8 @@ module.exports = {
         res.redirect('/auth/login');
     },
     ensureArtist: function (req, res, next) {
-        if (req.session && req.session.user && req.session.user.role === 'Artist') {
+        const user = (req.session && req.session.user) || (req.signedCookies && req.signedCookies.auth_user);
+        if (user && user.role === 'Artist') {
             return next();
         }
         if (typeof req.flash === 'function') {

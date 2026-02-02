@@ -112,6 +112,17 @@ exports.postLogin = async (req, res) => {
                 console.error('Session save error:', err);
                 return res.redirect('/auth/login');
             }
+
+            // --- VERCEL AUTH PERSISTENCE FIX ---
+            if (process.env.NODE_ENV === 'production') {
+                res.cookie('auth_user', req.session.user, {
+                    httpOnly: true,
+                    secure: true,
+                    signed: true,
+                    maxAge: 1000 * 60 * 60 * 24 // 24 hours
+                });
+            }
+
             console.log('Session saved, redirecting to:', targetUrl);
             return res.redirect(targetUrl);
         });
@@ -123,6 +134,9 @@ exports.postLogin = async (req, res) => {
 };
 
 exports.logout = (req, res) => {
+    if (process.env.NODE_ENV === 'production') {
+        res.clearCookie('auth_user');
+    }
     req.session.destroy((err) => {
         if (err) console.log(err);
         res.redirect('/auth/login');
