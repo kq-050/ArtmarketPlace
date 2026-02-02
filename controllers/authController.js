@@ -103,13 +103,8 @@ exports.postLogin = async (req, res) => {
         console.log('Session ID after login:', req.sessionID);
         console.log('User ID in session:', req.session.user._id);
 
-        // 4. Redirect based on Role (RBAC)
+        // 4. Redirect to public gallery for all users
         let targetUrl = '/';
-        if (user.role === 'Admin') {
-            targetUrl = '/admin/dashboard';
-        } else if (user.role === 'Artist') {
-            targetUrl = '/artist/dashboard';
-        }
 
         // FORCE SAVE SESSION BEFORE REDIRECT
         req.session.save(err => {
