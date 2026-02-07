@@ -1,55 +1,69 @@
 <nav class="site-navbar">
     <div class="navbar-container">
-        <div class="nav-left">
-            <a href="/" class="site-logo">ArtMarket</a>
+        <!-- Logo -->
+        <a href="/" class="site-logo font-serif fst-italic">
+            ArtMarket
+        </a>
 
-            <ul class="nav-links">
-                <li><a href="/" class="nav-link-item">Gallery</a></li>
-            </ul>
+        <!-- Search Bar (Central, Pill-shaped as per Figma intent) -->
+        <div class="d-none d-md-block mx-4 flex-grow-1" style="max-width: 500px;">
+            <form action="/" method="GET" class="position-relative">
+                <input type="text" name="search" class="form-control rounded-pill border-0 bg-light px-4 py-2"
+                    placeholder="Search Artworks Gallery..." style="font-size: 0.9rem;">
+                <button type="submit"
+                    class="btn position-absolute top-50 end-0 translate-middle-y rounded-circle p-2 me-1 text-muted">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
         </div>
 
+        <!-- Actions -->
         <div class="nav-actions">
-            <!-- Wishlist & Cart always visible if space permits -->
-            <a href="/wishlist" class="nav-icon" title="Wishlist">
+            <!-- Wishlist -->
+            <a href="/wishlist" class="nav-icon position-relative" title="Wishlist">
                 <i class="far fa-heart"></i>
             </a>
 
-            <a href="/cart" class="nav-icon position-relative" title="Shopping Cart">
-                <i class="fas fa-shopping-cart"></i>
-                <% if(locals.cartCount> 0) { %>
-                    <span
-                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger badge-count">
+            <!-- Cart -->
+            <a href="/cart" class="nav-icon position-relative" title="Cart">
+                <i class="fas fa-shopping-bag"></i>
+                <% if (locals.cartCount && locals.cartCount> 0) { %>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                        style="font-size: 0.6rem; padding: 0.25em 0.4em;">
                         <%= cartCount %>
                     </span>
                     <% } %>
             </a>
 
-            <!-- Auth State Links -->
+            <!-- Auth -->
             <% if (!locals.isAuthenticated) { %>
-                <a href="/auth/login" class="nav-link-item">Login</a>
-                <a href="/auth/signup" class="btn btn-outline-light btn-sm rounded-pill px-3">Sign Up</a>
+                <a href="/auth/login" class="fw-bold ms-3 text-dark text-decoration-none small">Log In</a>
+                <a href="/auth/signup" class="btn text-white btn-sm ms-2 px-3 rounded-pill"
+                    style="background-color: var(--color-primary);">Sign Up</a>
                 <% } else { %>
-                    <div class="user-dropdown">
-                        <button class="user-dropdown-btn">
-                            <i class="fas fa-user-circle"></i>
-                            <%= currentUser.username %> <i class="fas fa-chevron-down small"></i>
-                        </button>
-                        <div class="user-dropdown-content">
-                            <% if(currentUser.role==='Artist' ) { %>
-                                <a href="/artist/dashboard" class="dropdown-item"><i
-                                        class="fas fa-palette me-2"></i>Artist Studio</a>
-                                <% } else if(currentUser.role==='Admin' ) { %>
-                                    <a href="/admin/dashboard" class="dropdown-item"><i
-                                            class="fas fa-user-shield me-2"></i>Admin Panel</a>
+                    <div class="dropdown ms-3">
+                        <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
+                            id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="bg-secondary rounded-circle text-white d-flex align-items-center justify-content-center me-2"
+                                style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                <%= currentUser.username.charAt(0).toUpperCase() %>
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg" aria-labelledby="userDropdown">
+                            <% if (currentUser.role==='Admin' ) { %>
+                                <li><a class="dropdown-item small" href="/admin/dashboard">Admin Dashboard</a></li>
+                                <% } else if (currentUser.role==='Artist' ) { %>
+                                    <li><a class="dropdown-item small" href="/artist/dashboard">Artist Dashboard</a>
+                                    </li>
                                     <% } %>
-                                        <a href="/orders" class="dropdown-item"><i class="fas fa-box me-2"></i>My
-                                            Orders</a>
-                                        <a href="/wishlist" class="dropdown-item"><i
-                                                class="fas fa-heart me-2"></i>Wishlist</a>
-                                        <hr class="m-0 bg-secondary">
-                                        <a href="/auth/logout" class="dropdown-item text-danger"><i
-                                                class="fas fa-sign-out-alt me-2"></i>Logout</a>
-                        </div>
+                                        <li><a class="dropdown-item small" href="/orders">My Orders</a></li>
+                                        <li><a class="dropdown-item small" href="/wishlist">Wishlist</a></li>
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+                                        <li><a class="dropdown-item small text-danger" href="/auth/logout">Log Out</a>
+                                        </li>
+                        </ul>
                     </div>
                     <% } %>
         </div>

@@ -12,4 +12,8 @@ router.get('/add-artwork', ensureAuthenticated, ensureArtist, artistController.g
 // Note: upload.single('image') processes the file from the form field named "image"
 router.post('/add-artwork', ensureAuthenticated, ensureArtist, upload.single('image'), artistController.postAddArtwork);
 
+// Profile Routes
+router.get('/profile', ensureAuthenticated, ensureArtist, artistController.getProfile);
+router.post('/profile', ensureAuthenticated, ensureArtist, upload.single('image'), artistController.postProfile);
+
 module.exports = router;

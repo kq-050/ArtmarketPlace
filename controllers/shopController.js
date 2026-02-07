@@ -6,7 +6,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 // FR-01: Display Artwork on Homepage
 exports.getIndex = async (req, res, next) => {
     try {
-        const { search, category, sort, page = 1, limit = 9 } = req.query;
+        const { search, category, sort, style, orientation, size, page = 1, limit = 9 } = req.query;
         const currentPage = parseInt(page);
         const limitSize = parseInt(limit);
         const skip = (currentPage - 1) * limitSize;
@@ -30,6 +30,17 @@ exports.getIndex = async (req, res, next) => {
 
         if (category && category !== 'All') {
             dbQuery.category = category;
+        }
+
+        // New Filters
+        if (style) {
+            dbQuery.style = style; // Simple string match
+        }
+        if (orientation) {
+            dbQuery.orientation = orientation;
+        }
+        if (size) {
+            dbQuery.sizeCategory = size; // Matches 'sizeCategory' in schema
         }
 
         // Sorting Logic
@@ -75,9 +86,15 @@ exports.getArtworkDetails = async (req, res) => {
         const artwork = await Artwork.findById(req.params.id).populate('artist');
         if (!artwork) return res.redirect('/');
 
+        // Fetch related artworks (e.g., same category or just random/latest provided not the same ID)
+        const relatedArtworks = await Artwork.find({ _id: { $ne: req.params.id } })
+            .limit(4)
+            .populate('artist');
+
         res.render('shop/product-detail', {
             pageTitle: artwork.title,
-            artwork: artwork
+            artwork: artwork,
+            artworks: relatedArtworks // Passing this to fix the ReferenceError
         });
     } catch (err) {
         console.error(err);

@@ -1,76 +1,94 @@
 <%- include('../partials/header') %>
 
-    <div class="row mt-5">
-        <div class="col-md-6 m-auto">
-            <div class="card card-body">
-                <h1 class="text-center mb-3">Register</h1>
+    <div class="d-flex align-items-center justify-content-center"
+        style="min-height: 85vh; background-color: var(--color-bg-auth);">
+        <div class="p-4" style="width: 100%; max-width: 450px;">
 
-                <% if(error_msg && error_msg.length> 0) { %>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <%= error_msg %>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    <% } %>
-
-                        <% if(success_msg && success_msg.length> 0) { %>
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                <%= success_msg %>
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                        aria-label="Close"></button>
-                            </div>
-                            <% } %>
-                                <% if(typeof errors !='undefined' ) { %>
-                                    <% errors.forEach(function(error) { %>
-                                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                                            <%= error.msg %>
-                                                <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                                    aria-label="Close"></button>
-                                        </div>
-                                        <% }); %>
-                                            <% } %>
-
-                                                <form action="/auth/signup" method="POST">
-                                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                                                    <div class="mb-3">
-                                                        <label>Username</label>
-                                                        <input type="text" name="username" class="form-control"
-                                                            required>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label>Email</label>
-                                                        <input type="email" name="email" class="form-control" required>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label>Password</label>
-                                                        <input type="password" name="password" class="form-control"
-                                                            required>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label>I am a:</label>
-                                                        <select name="role" class="form-select" id="roleSelect"
-                                                            onchange="toggleBio()">
-                                                            <option value="Customer">Customer</option>
-                                                            <option value="Artist">Artist</option>
-                                                        </select>
-                                                    </div>
-
-                                                    <div class="mb-3 d-none" id="bioField">
-                                                        <label>Artist Bio</label>
-                                                        <textarea name="bio" class="form-control"></textarea>
-                                                    </div>
-
-                                                    <button type="submit"
-                                                        class="btn btn-primary w-100">Register</button>
-                                                </form>
-                                                <p class="mt-4">Already have an account? <a href="/auth/login">Login</a>
-                                                </p>
+            <div class="text-center mb-4">
+                <h2 class="font-serif fst-italic display-5 mb-3">REGISTER</h2>
             </div>
+
+            <% if(error_msg && error_msg.length> 0) { %>
+                <div class="alert alert-danger mb-3">
+                    <%= error_msg %>
+                </div>
+                <% } %>
+                    <% if(typeof errors !=='undefined' ) { %>
+                        <% errors.forEach(function(error) { %>
+                            <div class="alert alert-warning mb-2">
+                                <%= error.msg %>
+                            </div>
+                            <% }); %>
+                                <% } %>
+
+                                    <form action="/auth/signup" method="POST">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold small">Username</label>
+                                            <input type="text" name="username" class="form-control"
+                                                placeholder="johndoe"
+                                                style="border-radius: var(--radius-md); padding: 0.75rem;">
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold small">Email</label>
+                                            <input type="email" name="email" class="form-control"
+                                                placeholder="name@example.com"
+                                                style="border-radius: var(--radius-md); padding: 0.75rem;">
+                                        </div>
+
+
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold small">Password</label>
+                                            <div class="position-relative">
+                                                <input type="password" name="password" class="form-control"
+                                                    placeholder="••••••••"
+                                                    style="border-radius: var(--radius-md); padding: 0.75rem;">
+                                                <i
+                                                    class="fas fa-eye position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i>
+                                            </div>
+                                        </div>
+
+
+
+                                        <!-- Role Selection hidden default to Customer, keeping simple for UI match unless functionality demands -->
+                                        <div class="mb-3">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="role"
+                                                    id="roleCustomer" value="Customer" checked onchange="toggleBio()">
+                                                <label class="form-check-label" for="roleCustomer">Customer</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="role" id="roleArtist"
+                                                    value="Artist" onchange="toggleBio()">
+                                                <label class="form-check-label" for="roleArtist">Artist</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4 d-none" id="bioField">
+                                            <label class="form-label fw-bold small">Bio</label>
+                                            <textarea name="bio" class="form-control"
+                                                placeholder="Tell us about yourself"></textarea>
+                                        </div>
+
+                                        <button type="submit" class="btn text-white w-100 fw-bold"
+                                            style="background-color: var(--color-primary); border-radius: var(--radius-md); padding: 0.75rem;">
+                                            Create Account
+                                        </button>
+                                    </form>
+
+                                    <div class="text-center mt-3">
+                                        <p class="small text-muted">Already have Account? <a href="/auth/login"
+                                                class="text-dark fw-bold">Login</a></p>
+                                    </div>
         </div>
     </div>
 
     <script>
         function toggleBio() {
-            const role = document.getElementById('roleSelect').value;
+            const role = document.querySelector('input[name="role"]:checked').value;
             const bioField = document.getElementById('bioField');
             if (role === 'Artist') {
                 bioField.classList.remove('d-none');

@@ -2,46 +2,66 @@
 </main>
 
 <footer class="site-footer">
-    <div class="footer-container">
-        <!-- About Section -->
-        <div class="footer-section">
-            <h4 class="site-logo">ArtMarket</h4>
-            <p class="text-muted small mt-3">
-                Your global gateway to original masterpieces. Curating the best contemporary art for unique spaces.
-            </p>
-            <p class="small mt-4">
-                &copy; <%= new Date().getFullYear() %> ArtMarket Marketplace. All rights reserved.
-            </p>
+    <div class="navbar-container"> <!-- Reuse container for alignment -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem;">
+            <!-- Brand -->
+            <div class="footer-section">
+                <h4 class="site-logo" style="margin-bottom: 1rem; display: block;">ArtMarket</h4>
+                <p style="color: #999; font-size: 0.9rem; line-height: 1.6;">
+                    Curating the world's finest digital and physical art. Connecting collectors with visionary artists
+                    since 2024.
+                </p>
+                <div class="footer-social mt-3" style="display: flex; gap: 1rem;">
+                    <a href="#" style="color: white; font-size: 1.2rem;"><i class="fab fa-instagram"></i></a>
+                    <a href="#" style="color: white; font-size: 1.2rem;"><i class="fab fa-twitter"></i></a>
+                    <a href="#" style="color: white; font-size: 1.2rem;"><i class="fab fa-pinterest"></i></a>
+                </div>
+            </div>
+
+            <!-- Links -->
+            <div class="footer-section">
+                <h4
+                    style="color: white; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1.5rem;">
+                    Explore</h4>
+                <ul class="footer-links">
+                    <li><a href="/">New Arrivals</a></li>
+                    <li><a href="/?category=Paintings">Paintings</a></li>
+                    <li><a href="/?category=Digital">Digital Art</a></li>
+                    <li><a href="/about">Featured Artists</a></li>
+                </ul>
+            </div>
+
+            <!-- Support -->
+            <div class="footer-section">
+                <h4
+                    style="color: white; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1.5rem;">
+                    Support</h4>
+                <ul class="footer-links">
+                    <li><a href="/orders">Track Order</a></li>
+                    <li><a href="/wishlist">My Wishlist</a></li>
+                    <li><a href="#">Shipping & Returns</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+
+            <!-- Newsletter (Optional visual only) -->
+            <div class="footer-section">
+                <h4
+                    style="color: white; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1.5rem;">
+                    Stay Updated</h4>
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="email" placeholder="Email address"
+                        style="background: #222; border: 1px solid #333; padding: 0.5rem; color: white; width: 100%;">
+                    <button class="btn btn-secondary btn-sm">Join</button>
+                </div>
+            </div>
         </div>
 
-        <!-- Quick Links -->
-        <div class="footer-section">
-            <h4>Quick Links</h4>
-            <ul class="footer-links">
-                <li><a href="/">Gallery</a></li>
-                <li><a href="/cart">Your Cart</a></li>
-                <li><a href="/wishlist">Wishlist</a></li>
-                <li><a href="/auth/login">Login / Register</a></li>
-            </ul>
-        </div>
-
-        <!-- Connect -->
-        <div class="footer-section">
-            <h4>Connect</h4>
-            <p class="text-muted small">Follow us for latest arrivals and artist spotlights.</p>
-            <div class="footer-social mt-3">
-                <a href="#" class="nav-icon"><i class="fab fa-instagram"></i></a>
-                <a href="#" class="nav-icon"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="nav-icon"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="nav-icon"><i class="fab fa-pinterest"></i></a>
-            </div>
-            <div class="mt-4">
-                <a href="mailto:support@artmarket.com" class="footer-links a small">support@artmarket.com</a>
-            </div>
-        </div>
     </div>
-    <div class="footer-bottom">
-        <p>Designed for Art Lovers Worldwide.</p>
+    </div> <!-- Close navbar-container -->
+
+    <div class="container text-center py-3 mt-4" style="border-top: 1px solid #333; color: #888; font-size: 0.8rem;">
+        <p class="mb-0">&copy; <%= new Date().getFullYear() %> ArtMarket Marketplace. All rights reserved.</p>
     </div>
 </footer>
 

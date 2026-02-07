@@ -24,6 +24,18 @@ const artworkSchema = new mongoose.Schema({
         type: String,   // URL to the uploaded image
         required: true
     },
+    // Expansion Fields for Filtering (Match Figma)
+    style: { type: String, default: 'Abstract' },
+    orientation: {
+        type: String,
+        enum: ['Landscape', 'Portrait', 'Square'],
+        default: 'Square'
+    },
+    sizeCategory: {
+        type: String,
+        enum: ['Small', 'Medium', 'Large'], // Small (0-40cm), Medium (41-99cm), Large (100cm+)
+        default: 'Medium'
+    },
     artist: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

@@ -17,5 +17,15 @@ module.exports = {
             req.flash('error_msg', 'Access Denied: Artists Only');
         }
         res.redirect('/');
+    },
+    restrictArtist: function (req, res, next) {
+        const user = (req.session && req.session.user) || (req.signedCookies && req.signedCookies.auth_user);
+        if (user && user.role === 'Artist') {
+            if (typeof req.flash === 'function') {
+                req.flash('error_msg', 'Artists cannot access the public marketplace while logged in.');
+            }
+            return res.redirect('/artist/dashboard');
+        }
+        next();
     }
 };

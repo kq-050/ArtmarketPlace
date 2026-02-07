@@ -1,38 +1,55 @@
 <%- include('../partials/header') %>
 
-    <div class="row mt-5">
-        <div class="col-md-6 m-auto">
-            <div class="card card-body">
-                <h1 class="text-center mb-3">Login</h1>
-
-                <% if(error_msg && error_msg.length> 0) { %>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <%= error_msg %>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    <% } %>
-
-                        <% if(success_msg && success_msg.length> 0) { %>
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                <%= success_msg %>
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                        aria-label="Close"></button>
-                            </div>
-                            <% } %>
-                                <form action="/auth/login" method="POST">
-                                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                                    <div class="mb-3">
-                                        <label>Email</label>
-                                        <input type="email" name="email" class="form-control" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label>Password</label>
-                                        <input type="password" name="password" class="form-control" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary w-100">Login</button>
-                                </form>
-                                <p class="mt-4">No account? <a href="/auth/signup">Register</a></p>
+    <!-- Figma Design: Beige Background Container -->
+    <div class="d-flex align-items-center justify-content-center"
+        style="min-height: 85vh; background-color: var(--color-bg-auth);">
+        <div class="p-4" style="width: 100%; max-width: 400px;">
+            <div class="text-center mb-4">
+                <h2 class="font-serif fst-italic display-5 mb-4">LOG IN</h2>
             </div>
+
+            <% if(error_msg && error_msg.length> 0) { %>
+                <div class="alert alert-danger mb-3 py-2 fs-6">
+                    <%= error_msg %>
+                </div>
+                <% } %>
+                    <% if(success_msg && success_msg.length> 0) { %>
+                        <div class="alert alert-success mb-3 py-2 fs-6">
+                            <%= success_msg %>
+                        </div>
+                        <% } %>
+
+                            <form action="/auth/login" method="POST">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small">Email</label>
+                                    <input type="email" name="email" class="form-control"
+                                        placeholder="example@gmail.com"
+                                        style="border-radius: var(--radius-md); padding: 0.75rem;">
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold small">Password</label>
+                                    <div class="position-relative">
+                                        <input type="password" name="password" class="form-control"
+                                            placeholder="••••••••"
+                                            style="border-radius: var(--radius-md); padding: 0.75rem;">
+                                        <i
+                                            class="fas fa-eye position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn text-white w-100 fw-bold"
+                                    style="background-color: var(--color-primary); border-radius: var(--radius-md); padding: 0.75rem;">
+                                    Login
+                                </button>
+                            </form>
+
+                            <div class="text-center mt-3">
+                                <p class="small text-muted">Don't have Account? <a href="/auth/signup"
+                                        class="text-dark fw-bold">Sign up</a></p>
+                            </div>
         </div>
     </div>
 

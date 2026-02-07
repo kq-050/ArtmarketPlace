@@ -1,130 +1,202 @@
 <%- include('../partials/header') %>
 
-    <div class="hero-section">
+    <div class="container-fluid px-0 mb-5">
+        <div class="container py-4"></div>
+
         <div class="container">
-            <h1 class="display-3 fw-bold mb-3">Curated Art for Unique Spaces</h1>
-            <p class="lead mb-4">Discover original paintings, sculptures, and digital works from artists worldwide.</p>
-            <a href="#gallery" class="btn btn-light btn-lg px-5">Explore Collection</a>
-        </div>
-    </div>
-    <div class="container mb-4">
-        <form action="/" method="GET" class="row g-3 align-items-center bg-light p-3 rounded shadow-sm">
-            <div class="col-md-3">
-                <select name="category" class="form-select">
-                    <option value="All">All Categories</option>
-                    <option value="Painting" <%=selectedCategory==='Painting' ?'selected':'' %>>Painting</option>
-                    <option value="Sculpture" <%=selectedCategory==='Sculpture' ?'selected':'' %>>Sculpture</option>
-                    <option value="Digital" <%=selectedCategory==='Digital' ?'selected':'' %>>Digital</option>
-                    <option value="Photography" <%=selectedCategory==='Photography' ?'selected':'' %>>Photography
-                    </option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <select name="sort" class="form-select">
-                    <option value="latest" <%=currentSort==='latest' ?'selected':'' %>>Latest Arrivals</option>
-                    <option value="price_asc" <%=currentSort==='price_asc' ?'selected':'' %>>Price: Low to High</option>
-                    <option value="price_desc" <%=currentSort==='price_desc' ?'selected':'' %>>Price: High to Low
-                    </option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <input type="text" name="search" class="form-control" placeholder="Search keyword..."
-                    value="<%= searchQuery %>">
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100">Filter</button>
-            </div>
-        </form>
-    </div>
+            <!-- Banner Title -->
+            <h2 class="font-serif fst-italic mb-4" style="font-size: 2rem; color: #1a1a1a;">OUR BEST ARTS GALLERY</h2>
 
-    <div class="container" id="gallery">
-        <div class="row mb-4">
-            <div class="col-12 text-center">
-                <h2 class="section-title">Latest Arrivals</h2>
-                <p class="text-muted">
-                    <%= totalArtworks %> artworks found
-                </p>
-                <hr class="w-25 mx-auto text-muted">
+            <!-- Abstract Art Banner -->
+            <div class="mb-5" style="width: 100%; height: 350px; overflow: hidden; border-radius: var(--radius-sm);">
+                <img src="https://images.unsplash.com/photo-1541963463532-d68292c34b19?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
+                    alt="Art Banner" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
-        </div>
 
-        <div class="row">
-            <% if(artworks.length> 0) { %>
-                <% artworks.forEach(art=> { %>
-                    <div class="col-md-4 mb-5">
-                        <div class="card h-100 artwork-card">
-                            <a href="/artwork/<%= art._id %>">
-                                <img src="<%= art.imagePath %>" class="card-img-top" alt="<%= art.title %>">
-                            </a>
+            <div class="row">
+                <!-- Left Sidebar "JUST FOR YOU" -->
+                <!-- Left Sidebar "JUST FOR YOU" -->
+                <div class="col-lg-3 pe-lg-4 mb-5">
+                    <div class="p-4 rounded" style="background-color: var(--color-bg-auth);"> <!-- Beige Background -->
+                        <h3 class="font-serif fst-italic mb-4" style="font-size: 1.5rem;">JUST FOR YOU</h3>
 
-                            <div class="card-body text-center">
-                                <h5 class="card-title">
-                                    <%= art.title %>
-                                </h5>
-                                <p class="text-muted small">by <%= art.artist.username %>
-                                </p>
-                                <div class="price-tag mb-3">$<%= art.price %>
+                        <form action="/" method="GET" id="filterForm">
+                            <!-- Category -->
+                            <div class="mb-4">
+                                <h6 class="fw-bold mb-3 small"><i class="fas fa-layer-group me-2"></i> Category</h6>
+                                <div class="d-flex flex-column gap-2 small text-muted">
+                                    <% ['Painting', 'Sculpture' , 'Digital' , 'Photography' ].forEach(cat=> { %>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="category"
+                                                value="<%= cat %>" id="cat<%= cat %>" <%=selectedCategory===cat
+                                                ? 'checked' : '' %> onchange="this.form.submit()">
+                                            <label class="form-check-label" for="cat<%= cat %>">
+                                                <%= cat %> Artwork
+                                            </label>
+                                        </div>
+                                        <% }) %>
                                 </div>
-
-                                <% if(isAuthenticated) { %>
-                                    <form action="/wishlist" method="POST" class="position-absolute top-0 end-0 p-3">
-                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                                        <input type="hidden" name="artworkId" value="<%= art._id %>">
-                                        <button type="submit" class="btn btn-light btn-sm rounded-circle shadow-sm">
-                                            <% if(currentUser.wishlist && currentUser.wishlist.some(id=> id.toString()
-                                                === art._id.toString())) { %>
-                                                <i class="fas fa-heart text-danger"></i>
-                                                <% } else { %>
-                                                    <i class="far fa-heart text-danger"></i>
-                                                    <% } %>
-                                        </button>
-                                    </form>
-                                    <% } %>
-
-                                        <a href="/artwork/<%= art._id %>"
-                                            class="btn btn-outline-primary btn-sm stretched-link">View Details</a>
                             </div>
-                        </div>
+
+                            <!-- Availability -->
+                            <div class="mb-4">
+                                <h6 class="fw-bold mb-3 small"><i class="fas fa-tags me-2"></i> Availability</h6>
+                                <div class="form-check small text-muted">
+                                    <input class="form-check-input" type="checkbox" name="availability" value="Stock"
+                                        checked>
+                                    <label class="form-check-label">In Stock</label>
+                                </div>
+                            </div>
+
+                            <!-- Style -->
+                            <div class="mb-4">
+                                <h6 class="fw-bold mb-3 small"><i class="fas fa-palette me-2"></i> Style</h6>
+                                <div class="d-flex flex-column gap-2 small text-muted">
+                                    <% ['Abstract', 'Architecture' , 'Beach' ].forEach(s=> { %>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="style"
+                                                value="<%= s %>" id="style<%= s %>">
+                                            <label class="form-check-label" for="style<%= s %>">
+                                                <%= s %>
+                                            </label>
+                                        </div>
+                                        <% }) %>
+                                </div>
+                                <a href="#" class="small text-muted mt-2 d-inline-block">See more <i
+                                        class="fas fa-chevron-down"></i></a>
+                            </div>
+
+                            <!-- Orientation -->
+                            <div class="mb-4">
+                                <h6 class="fw-bold mb-3 small"><i class="fas fa-compass me-2"></i> Orientation</h6>
+                                <div class="d-flex flex-column gap-2 small text-muted">
+                                    <% ['Landscape', 'Portrait' , 'Square' ].forEach(o=> { %>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="orientation"
+                                                value="<%= o %>" id="orient<%= o %>">
+                                            <label class="form-check-label" for="orient<%= o %>">
+                                                <%= o %>
+                                            </label>
+                                        </div>
+                                        <% }) %>
+                                </div>
+                            </div>
+
+                            <!-- Size -->
+                            <div class="mb-4">
+                                <h6 class="fw-bold mb-3 small"><i class="fas fa-ruler-combined me-2"></i> Size</h6>
+                                <div class="d-flex flex-column gap-2 small text-muted">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="size" value="Small">
+                                        <label class="form-check-label">Small (0-40cm)</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="size" value="Medium">
+                                        <label class="form-check-label">Medium (41-99cm)</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="size" value="Large">
+                                        <label class="form-check-label">Large (100cm+)</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Artist Search -->
+                            <div class="mb-4">
+                                <h6 class="fw-bold mb-3 small"><i class="fas fa-user me-2"></i> Artist</h6>
+                                <div class="input-group input-group-sm">
+                                    <input type="text" class="form-control" name="search" placeholder="Search"
+                                        value="<%= searchQuery %>">
+                                    <button class="btn btn-outline-secondary" type="submit"><i
+                                            class="fas fa-search"></i></button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                    <% }) %>
+                </div>
 
-                        <!-- Pagination Controls -->
-                        <div class="col-12 mt-4 d-flex justify-content-center">
-                            <nav aria-label="Page navigation">
-                                <ul class="pagination pagination-lg">
-                                    <% if(hasPrevPage) { %>
-                                        <li class="page-item">
-                                            <a class="page-link"
-                                                href="/?page=<%= currentPage - 1 %>&category=<%= selectedCategory %>&search=<%= searchQuery %>&sort=<%= currentSort %>">&laquo;
-                                                Previous</a>
-                                        </li>
+                <!-- Art Grid -->
+                <div class="col-lg-9">
+                    <div class="row g-4">
+                        <% if(artworks.length> 0) { %>
+                            <% artworks.forEach(art=> { %>
+                                <div class="col-md-4 col-sm-6">
+                                    <div class="card h-100 border-0" style="background: transparent;">
+                                        <div class="position-relative mb-2"
+                                            style="border-radius: var(--radius-sm); overflow: hidden; aspect-ratio: 1/1;">
+                                            <a href="/artwork/<%= art._id %>">
+                                                <img src="<%= art.imagePath %>" class="w-100 h-100"
+                                                    alt="<%= art.title %>" style="object-fit: cover;">
+                                            </a>
+                                            <div class="position-absolute top-0 start-0 p-2">
+                                                <div class="bg-white rounded-circle d-flex align-items-center justify-content-center"
+                                                    style="width: 30px; height: 30px; opacity: 0.8;">
+                                                    <i class="far fa-clock" style="font-size: 0.8rem;"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-body p-0">
+                                            <div class="d-flex align-items-center mb-1">
+                                                <div class="flex-grow-1">
+                                                    <p class="mb-0 small text-muted"><i class="fas fa-globe me-1"></i>
+                                                        The Pink Pasture Patrol</p>
+                                                </div>
+                                            </div>
+                                            <h6 class="card-title text-truncate mb-0" style="font-size: 0.9rem;">
+                                                <%= art.title %>
+                                            </h6>
+                                            <p class="card-text small text-muted mb-0">
+                                                <%= art.artist.username %>
+                                            </p>
+                                            <p class="card-text fw-bold mt-1 text-dark">
+                                                $<%= art.price %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% }) %>
+                                    <% } else { %>
+                                        <div class="col-12 py-5 text-center">
+                                            <p class="text-muted">No artworks found.</p>
+                                        </div>
                                         <% } %>
+                    </div>
 
-                                            <% for(let i=1; i <=totalPages; i++) { %>
-                                                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                                                    <a class="page-link"
-                                                        href="/?page=<%= i %>&category=<%= selectedCategory %>&search=<%= searchQuery %>&sort=<%= currentSort %>">
-                                                        <%= i %>
-                                                    </a>
-                                                </li>
-                                                <% } %>
-
-                                                    <% if(hasNextPage) { %>
-                                                        <li class="page-item">
-                                                            <a class="page-link"
-                                                                href="/?page=<%= currentPage + 1 %>&category=<%= selectedCategory %>&search=<%= searchQuery %>&sort=<%= currentSort %>">Next
-                                                                &raquo;</a>
-                                                        </li>
-                                                        <% } %>
-                                </ul>
-                            </nav>
-                        </div>
-
-                        <% } else { %>
-                            <div class="col-12 text-center py-5">
-                                <h3 class="text-muted">No masterpieces available right now.</h3>
-                            </div>
+                    <!-- Pagination -->
+                    <div class="d-flex justify-content-center mt-5 gap-3">
+                        <% if(hasPrevPage) { %>
+                            <a href="/?page=<%= currentPage - 1 %>" class="btn btn-sm btn-outline-dark border-0"><i
+                                    class="fas fa-chevron-left"></i> Previous</a>
                             <% } %>
+                                <span class="align-self-center small text-muted">Page <%= currentPage %> of <%=
+                                            totalPages %></span>
+                                <% if(hasNextPage) { %>
+                                    <a href="/?page=<%= currentPage + 1 %>"
+                                        class="btn btn-sm btn-outline-dark border-0">Next <i
+                                            class="fas fa-chevron-right"></i></a>
+                                    <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABOUT US Section -->
+            <div class="row mt-5 pt-5 mb-5 align-items-center">
+                <div class="col-12 mb-4">
+                    <h3 class="font-serif fst-italic">ABOUT US</h3>
+                </div>
+                <div class="col-md-5">
+                    <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+                        class="img-fluid rounded" alt="About">
+                </div>
+                <div class="col-md-7 ps-md-5">
+                    <p class="text-muted small" style="line-height: 2;">
+                        Founded in June 2024, ArtMarket Research is dedicated to fostering a vibrant art community. Our
+                        mission is to connect artists with collectors who appreciate unique visions. We believe in the
+                        power of art to transform spaces and inspire minds.
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 

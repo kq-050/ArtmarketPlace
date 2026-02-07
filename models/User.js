@@ -28,6 +28,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    // Artist Profile Image (FR-New)
+    profileImage: {
+        type: String,
+        default: '' // URL path
+    },
     // Artist Suspension / Account Status (FR-12)
     isActive: {
         type: Boolean,
@@ -36,7 +41,7 @@ const userSchema = new mongoose.Schema({
     // Password Reset Fields (Future Proofing)
     resetToken: String,
     resetTokenExpiration: Date,
-    
+
     // Customer specific fields
     wishlist: [{
         type: mongoose.Schema.Types.ObjectId,
@@ -50,7 +55,7 @@ const userSchema = new mongoose.Schema({
 
 // Hash password before saving (NFR-01)
 // Hash password before saving (NFR-01)
-userSchema.pre('save', async function() {
+userSchema.pre('save', async function () {
     // Only hash the password if it has been modified (or is new)
     if (!this.isModified('password')) return;
 
@@ -63,7 +68,7 @@ userSchema.pre('save', async function() {
 });
 
 // Helper method to validate password during login
-userSchema.methods.matchPassword = async function(enteredPassword) {
+userSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
 

@@ -1,0 +1,134 @@
+<%- include('../partials/header') %>
+
+    <div class="container-fluid">
+        <div class="row">
+            <%- include('../partials/artist-sidebar') %>
+
+                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4" style="min-height: 100vh;">
+
+                    <div
+                        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4">
+                        <h1 class="h2 fw-bold font-serif fst-italic">My Profile</h1>
+                    </div>
+
+                    <% if (success_msg && success_msg.length> 0) { %>
+                        <div class="alert alert-success">
+                            <%= success_msg %>
+                        </div>
+                        <% } %>
+                            <% if (error_msg && error_msg.length> 0) { %>
+                                <div class="alert alert-danger">
+                                    <%= error_msg %>
+                                </div>
+                                <% } %>
+
+                                    <form action="/artist/profile" method="POST" enctype="multipart/form-data">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                                        <div class="row gx-5">
+                                            <!-- Left Column: Profile Info (Beige Background in mockup, but strict implementation asks to match visually) -->
+                                            <!-- Mockup shows sidebar is Beige, Profile Area is white/clean. -->
+
+                                            <div class="col-md-6 mb-5">
+                                                <h4 class="font-serif fst-italic mb-4">PROFILE</h4>
+
+                                                <div class="mb-4 text-center">
+                                                    <div class="position-relative d-inline-block">
+                                                        <% if (user.profileImage) { %>
+                                                            <img src="<%= user.profileImage %>" class="rounded"
+                                                                style="width: 150px; height: 150px; object-fit: cover;">
+                                                            <% } else { %>
+                                                                <div class="bg-secondary rounded d-flex align-items-center justify-content-center text-white"
+                                                                    style="width: 150px; height: 150px; font-size: 3rem;">
+                                                                    <%= user.username.charAt(0).toUpperCase() %>
+                                                                </div>
+                                                                <% } %>
+                                                    </div>
+                                                    <h5 class="mt-3 text-uppercase">
+                                                        <%= user.username %>
+                                                    </h5>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold small">Username</label>
+                                                    <input type="text" name="username" class="form-control"
+                                                        value="<%= user.username %>"
+                                                        style="border-radius: var(--radius-sm); padding: 0.75rem;">
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold small">Email</label>
+                                                    <input type="email" class="form-control" value="<%= user.email %>"
+                                                        disabled
+                                                        style="border-radius: var(--radius-sm); padding: 0.75rem; background-color: #f8f9fa;">
+                                                </div>
+
+                                                <!-- Phone Number Visual Only (Omitted functionality per constraints) -->
+
+
+                                                <!-- Bio / Description (using 'bio' field) -->
+                                                <div class="mb-4">
+                                                    <label class="form-label fw-bold small">Bio</label>
+                                                    <textarea name="bio" class="form-control" rows="3"
+                                                        style="border-radius: var(--radius-sm); padding: 0.75rem;"><%= user.bio %></textarea>
+                                                </div>
+
+                                                <div class="mb-4">
+                                                    <label class="form-label fw-bold small">Upload Profile image</label>
+                                                    <input type="file" name="image" class="form-control"
+                                                        style="border-radius: var(--radius-sm);">
+                                                </div>
+
+                                                <button type="submit" class="btn text-white fw-bold px-4 py-2"
+                                                    style="background-color: var(--color-primary);">Update
+                                                    Profile</button>
+                                            </div>
+
+                                            <!-- Right Column: Password -->
+                                            <div class="col-md-6 border-start ps-5">
+                                                <h4 class="font-serif fst-italic mb-4">PASSWORD</h4>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold small">Current Password</label>
+                                                    <div class="position-relative">
+                                                        <input type="password" class="form-control"
+                                                            placeholder="••••••••"
+                                                            style="border-radius: var(--radius-sm); padding: 0.75rem;">
+                                                        <i
+                                                            class="fas fa-eye position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold small">New Password</label>
+                                                    <div class="position-relative">
+                                                        <input type="password" name="newPassword" class="form-control"
+                                                            placeholder="••••••••"
+                                                            style="border-radius: var(--radius-sm); padding: 0.75rem;">
+                                                        <i
+                                                            class="fas fa-eye position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-4">
+                                                    <label class="form-label fw-bold small">Confirm Password</label>
+                                                    <div class="position-relative">
+                                                        <input type="password" name="confirmPassword"
+                                                            class="form-control" placeholder="••••••••"
+                                                            style="border-radius: var(--radius-sm); padding: 0.75rem;">
+                                                        <i
+                                                            class="fas fa-eye position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i>
+                                                    </div>
+                                                </div>
+
+                                                <button type="submit" class="btn text-white fw-bold px-4 py-2"
+                                                    style="background-color: var(--color-primary);">Update
+                                                    Password</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                </main>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>

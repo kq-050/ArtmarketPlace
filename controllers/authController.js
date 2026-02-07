@@ -83,6 +83,13 @@ exports.postLogin = async (req, res) => {
             return res.redirect('/auth/login');
         }
 
+        // 1b. Check Suspension (Audit Fix)
+        if (user.role === 'Artist' && !user.isActive) {
+            console.log('Suspended user attempted login');
+            req.flash('error_msg', 'Your account has been suspended. Please contact admin.');
+            return res.redirect('/auth/login');
+        }
+
         // 2. Check Password (using method from User model)
         const isMatch = await user.matchPassword(password);
         if (!isMatch) {
@@ -103,8 +110,11 @@ exports.postLogin = async (req, res) => {
         console.log('Session ID after login:', req.sessionID);
         console.log('User ID in session:', req.session.user._id);
 
-        // 4. Redirect to public gallery for all users
+        // 4. Redirect based on role
         let targetUrl = '/';
+        if (req.session.user.role === 'Artist') {
+            targetUrl = '/artist/dashboard';
+        }
 
         // FORCE SAVE SESSION BEFORE REDIRECT
         req.session.save(err => {

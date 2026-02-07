@@ -1,4 +1,5 @@
 const Artwork = require('../models/Artwork');
+const User = require('../models/User');
 const Order = require('../models/Order');
 const Config = require('../models/Config');
 
@@ -45,7 +46,7 @@ exports.getAddArtwork = (req, res) => {
 
 // FR-06: Artwork Submission
 exports.postAddArtwork = async (req, res) => {
-    const { title, description, price, dimensions, medium, category } = req.body;
+    const { title, description, price, dimensions, medium, category, style, orientation, sizeCategory } = req.body;
 
     // req.file is created by Multer (contains the image info)
     if (!req.file) {
@@ -61,6 +62,9 @@ exports.postAddArtwork = async (req, res) => {
             dimensions,
             medium,
             category,
+            style: style || 'Abstract',
+            orientation: orientation || 'Square',
+            sizeCategory: sizeCategory || 'Medium',
             imagePath: `/uploads/${req.file.filename}`, // Save the path, not the file itself
             artist: req.session.user._id,
             status: 'Pending' // Default status
@@ -74,5 +78,61 @@ exports.postAddArtwork = async (req, res) => {
         console.error(err);
         req.flash('error_msg', 'Error uploading artwork');
         res.redirect('/artist/add-artwork');
+    }
+};
+
+// FR-New: Get Profile Page
+exports.getProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.session.user._id);
+        res.render('artist/profile', {
+            pageTitle: 'Artist Profile',
+            user: user,
+            csrfToken: req.csrfToken() // Ensure CSRF is passed
+        });
+    } catch (err) {
+        console.error(err);
+        res.redirect('/artist/dashboard');
+    }
+};
+
+// FR-New: Update Profile
+exports.postProfile = async (req, res) => {
+    const { username, bio, newPassword, confirmPassword } = req.body;
+    console.log('DEBUG: postProfile body:', req.body);
+    console.log('DEBUG: postProfile file:', req.file);
+
+    try {
+        const user = await User.findById(req.session.user._id);
+        console.log('DEBUG: User found:', user._id);
+
+        // Update Basic Info
+        user.username = username || user.username;
+        user.bio = bio || user.bio;
+
+        // Handle Profile Image Upload
+        if (req.file) {
+            user.profileImage = `/uploads/${req.file.filename}`;
+        }
+
+        // Handle Password Update
+        if (newPassword && newPassword.length > 0) {
+            if (newPassword !== confirmPassword) {
+                req.flash('error_msg', 'Passwords do not match');
+                return res.redirect('/artist/profile');
+            }
+            user.password = newPassword; // Will be hashed via pre-save hook
+        }
+
+        await user.save();
+
+        req.session.user = user; // Update session
+        req.flash('success_msg', 'Profile updated successfully');
+        res.redirect('/artist/profile');
+
+    } catch (err) {
+        console.error(err);
+        req.flash('error_msg', 'Error updating profile');
+        res.redirect('/artist/profile');
     }
 };
