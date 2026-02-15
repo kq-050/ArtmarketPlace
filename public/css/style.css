@@ -98,8 +98,8 @@ img {
     align-items: center;
     justify-content: center;
     padding: 0.875rem 2rem;
-    border-radius: 2px;
-    /* Sharper corners for premium feel, or var(--radius-sm) */
+    border-radius: var(--radius-sm);
+    /* Standardized 10px radius */
     font-weight: 500;
     cursor: pointer;
     border: 1px solid transparent;
@@ -282,6 +282,10 @@ img {
     text-transform: uppercase;
 }
 
+.footer-links {
+    padding-left: 0;
+}
+
 .footer-links a {
     color: #888;
     font-size: 0.95rem;
@@ -303,8 +307,8 @@ img {
 /* Cards (Standardized) */
 .card {
     border: 1px solid var(--color-border);
-    border-radius: 0;
-    /* Boxy premium look */
+    border-radius: var(--radius-md);
+    /* Standardized look */
     background: var(--color-bg-surface);
     transition: var(--transition-base);
 }

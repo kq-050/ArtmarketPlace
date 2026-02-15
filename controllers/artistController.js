@@ -107,8 +107,9 @@ exports.postProfile = async (req, res) => {
         console.log('DEBUG: User found:', user._id);
 
         // Update Basic Info
-        user.username = username || user.username;
-        user.bio = bio || user.bio;
+        // Check if fields are present in the body before updating
+        if (username !== undefined) user.username = username;
+        if (bio !== undefined) user.bio = bio;
 
         // Handle Profile Image Upload
         if (req.file) {
@@ -117,6 +118,18 @@ exports.postProfile = async (req, res) => {
 
         // Handle Password Update
         if (newPassword && newPassword.length > 0) {
+            const { currentPassword } = req.body;
+
+            // Security: Verify current password if provided (Recommended)
+            // If the UI has a field for existing password, we should verify it.
+            if (currentPassword) {
+                const isMatch = await user.matchPassword(currentPassword);
+                if (!isMatch) {
+                    req.flash('error_msg', 'Current password is incorrect');
+                    return res.redirect('/artist/profile');
+                }
+            }
+
             if (newPassword !== confirmPassword) {
                 req.flash('error_msg', 'Passwords do not match');
                 return res.redirect('/artist/profile');
@@ -127,8 +140,12 @@ exports.postProfile = async (req, res) => {
         await user.save();
 
         req.session.user = user; // Update session
-        req.flash('success_msg', 'Profile updated successfully');
-        res.redirect('/artist/profile');
+        // Explicitly save session to ensure race conditions don't overwrite the redirect
+        req.session.save((err) => {
+            if (err) console.error(err);
+            req.flash('success_msg', 'Profile updated successfully');
+            res.redirect('/artist/profile');
+        });
 
     } catch (err) {
         console.error(err);
