@@ -1,71 +1,81 @@
-<nav class="site-navbar">
-    <div class="navbar-container">
+<nav class="site-navbar navbar navbar-expand-lg">
+    <div class="navbar-container container-fluid">
         <!-- Logo -->
-        <a href="/" class="site-logo font-serif fst-italic">
+        <a href="/" class="site-logo font-serif fst-italic navbar-brand">
             ArtMarket
         </a>
 
-        <!-- Search Bar (Central, Pill-shaped as per Figma intent) -->
-        <div class="d-none d-md-block mx-4 flex-grow-1" style="max-width: 500px;">
-            <form action="/" method="GET" class="position-relative">
-                <input type="text" name="search" class="form-control border-0 bg-light px-4 py-2"
-                    placeholder="Search Artworks Gallery..." style="font-size: 0.9rem;">
-                <button type="submit"
-                    class="btn position-absolute top-50 end-0 translate-middle-y rounded-circle p-2 me-1 text-muted">
-                    <i class="fas fa-search"></i>
-                </button>
-            </form>
-        </div>
+        <!-- Toggler -->
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-        <!-- Actions -->
-        <div class="nav-actions">
-            <!-- Wishlist -->
-            <a href="/wishlist" class="nav-icon position-relative" title="Wishlist">
-                <i class="far fa-heart"></i>
-            </a>
+        <!-- Collapsible Content -->
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <!-- Search Bar (Moves to top of collapse on mobile, center on desktop) -->
+            <div class="mx-lg-4 my-3 my-lg-0 flex-grow-1" style="max-width: 500px;">
+                <form action="/" method="GET" class="position-relative">
+                    <input type="text" name="search" class="form-control border-0 bg-light px-4 py-2"
+                        placeholder="Search Artworks Gallery..." style="font-size: 0.9rem;">
+                    <button type="submit"
+                        class="btn position-absolute top-50 end-0 translate-middle-y rounded-circle p-2 me-1 text-muted">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
 
-            <!-- Cart -->
-            <a href="/cart" class="nav-icon position-relative" title="Cart">
-                <i class="fas fa-shopping-bag"></i>
-                <% if (locals.cartCount && locals.cartCount> 0) { %>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                        style="font-size: 0.6rem; padding: 0.25em 0.4em;">
-                        <%= cartCount %>
-                    </span>
+            <!-- Nav Links & Actions -->
+            <div class="nav-actions ms-auto d-flex flex-column flex-lg-row align-items-lg-center gap-3">
+                <!-- Wishlist -->
+                <a href="/wishlist" class="nav-icon position-relative text-decoration-none" title="Wishlist">
+                    <i class="far fa-heart"></i>
+                    <span class="d-lg-none ms-2">Wishlist</span>
+                </a>
+
+                <!-- Cart -->
+                <a href="/cart" class="nav-icon position-relative text-decoration-none" title="Cart">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="d-lg-none ms-2">Cart</span>
+                    <% if (locals.cartCount && locals.cartCount> 0) { %>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                            style="font-size: 0.6rem; padding: 0.25em 0.4em;">
+                            <%= cartCount %>
+                        </span>
                     <% } %>
-            </a>
+                </a>
 
-            <!-- Auth -->
-            <% if (!locals.isAuthenticated) { %>
-                <a href="/auth/login" class="fw-bold ms-3 text-dark text-decoration-none small">Log In</a>
-                <a href="/auth/signup" class="btn text-white btn-sm ms-2 px-3 rounded-pill"
-                    style="background-color: var(--color-primary);">Sign Up</a>
+                <!-- Auth -->
+                <% if (!locals.isAuthenticated) { %>
+                    <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+                        <a href="/auth/login" class="fw-bold text-dark text-decoration-none small">Log In</a>
+                        <a href="/auth/signup" class="btn text-white btn-sm px-3 rounded-pill"
+                            style="background-color: var(--color-primary);">Sign Up</a>
+                    </div>
                 <% } else { %>
-                    <div class="dropdown ms-3">
+                    <div class="dropdown mt-3 mt-lg-0">
                         <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
                             id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <div class="bg-secondary rounded-circle text-white d-flex align-items-center justify-content-center me-2"
                                 style="width: 32px; height: 32px; font-size: 0.8rem;">
                                 <%= currentUser.username.charAt(0).toUpperCase() %>
                             </div>
+                            <span class="d-lg-none"><%= currentUser.username %></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg" aria-labelledby="userDropdown">
                             <% if (currentUser.role==='Admin' ) { %>
                                 <li><a class="dropdown-item small" href="/admin/dashboard">Admin Dashboard</a></li>
-                                <% } else if (currentUser.role==='Artist' ) { %>
-                                    <li><a class="dropdown-item small" href="/artist/dashboard">Artist Dashboard</a>
-                                    </li>
-                                    <% } %>
-                                        <li><a class="dropdown-item small" href="/orders">My Orders</a></li>
-                                        <li><a class="dropdown-item small" href="/wishlist">Wishlist</a></li>
-                                        <li>
-                                            <hr class="dropdown-divider">
-                                        </li>
-                                        <li><a class="dropdown-item small text-danger" href="/auth/logout">Log Out</a>
-                                        </li>
+                            <% } else if (currentUser.role==='Artist' ) { %>
+                                <li><a class="dropdown-item small" href="/artist/dashboard">Artist Dashboard</a></li>
+                            <% } %>
+                            <li><a class="dropdown-item small" href="/orders">My Orders</a></li>
+                            <li><a class="dropdown-item small" href="/wishlist">Wishlist</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item small text-danger" href="/auth/logout">Log Out</a></li>
                         </ul>
                     </div>
-                    <% } %>
+                <% } %>
+            </div>
         </div>
     </div>
 </nav>

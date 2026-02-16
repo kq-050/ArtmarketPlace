@@ -397,4 +397,140 @@ img {
 
 .gap-3 {
     gap: 1rem;
+}/* =========================================
+   RESPONSIVE FIXES (Mobile & Tablet)
+   ========================================= */
+
+@media (max-width: 991px) {
+
+    /* Tablet Adjustments */
+    .site-navbar {
+        height: auto;
+        min-height: 80px;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .navbar-container {
+        padding: 0 1.5rem;
+    }
+
+    .nav-actions {
+        width: 100%;
+        margin-top: 1rem;
+        border-top: 1px solid var(--color-border);
+        padding-top: 1rem;
+        justify-content: center;
+    }
+
+    /* Adjust typography for tablet */
+    h1.display-5 {
+        font-size: 2.5rem;
+    }
+
+    h2 {
+        font-size: 2rem;
+    }
+
+    /* Ensure images scale */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+@media (max-width: 768px) {
+
+    /* Small Tablet/Large Phone */
+    .container {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+
+    /* Mobile Adjustments */
+    .container,
+    .navbar-container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.75rem;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+    }
+
+    /* Full width buttons for touch targets */
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: center;
+    }
+
+    /* Reset width for small buttons if needed */
+    .btn-sm {
+        width: auto;
+        display: inline-flex;
+    }
+
+    .nav-actions {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .nav-icon {
+        display: flex;
+        font-size: 1rem;
+        align-items: center;
+    }
+
+    /* Form inputs (excluding checkboxes/radios) */
+    .form-control,
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Adjust spacing */
+    .mb-5 {
+        margin-bottom: 2.5rem !important;
+    }
+
+    .mt-5 {
+        margin-top: 2.5rem !important;
+    }
+
+    .py-5 {
+        padding-top: 2.5rem !important;
+        padding-bottom: 2.5rem !important;
+    }
+
+    /* Footer stacking */
+    .footer-section {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .footer-links {
+        padding-left: 0;
+        text-align: center;
+    }
+
+    /* Hide decorative/large elements if needed */
+    .d-none-mobile {
+        display: none !important;
+    }
 }
