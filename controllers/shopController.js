@@ -34,13 +34,16 @@ exports.getIndex = async (req, res, next) => {
 
         // New Filters
         if (style) {
-            dbQuery.style = style; // Simple string match
+            dbQuery.style = { $in: Array.isArray(style) ? style : [style] };
+            // dbQuery.style = style; // Simple string match
         }
         if (orientation) {
-            dbQuery.orientation = orientation;
+            dbQuery.orientation = { $in: Array.isArray(orientation) ? orientation : [orientation] };
+            // dbQuery.orientation = orientation;
         }
         if (size) {
-            dbQuery.sizeCategory = size; // Matches 'sizeCategory' in schema
+            dbQuery.sizeCategory = { $in: Array.isArray(size) ? size : [size] };
+            // dbQuery.sizeCategory = size; // Matches 'sizeCategory' in schema
         }
 
         // Sorting Logic
