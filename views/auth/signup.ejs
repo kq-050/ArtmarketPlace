@@ -42,12 +42,16 @@
 
                                         <div class="mb-3">
                                             <label class="form-label fw-bold small">Password</label>
-                                            <div class="position-relative">
-                                                <input type="password" name="password" class="form-control"
+                                            <div class="input-group password-group">
+                                                <input type="password" name="password"
+                                                    class="form-control border-end-0 password-input"
                                                     placeholder="Enter your Password"
-                                                    style="border-radius: var(--radius-md); padding: 0.75rem;">
-                                                <i
-                                                    class="fas fa-eye position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i>
+                                                    style="border-top-left-radius: var(--radius-md); border-bottom-left-radius: var(--radius-md); padding: 0.75rem;">
+
+                                                <span class="input-group-text bg-white border-start-0 toggle-password"
+                                                    style="border-top-right-radius: var(--radius-md); border-bottom-right-radius: var(--radius-md); cursor: pointer;">
+                                                    <i class="fas fa-eye text-muted"></i>
+                                                </span>
                                             </div>
                                         </div>
 
@@ -87,6 +91,33 @@
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Select all password toggle spanning buttons
+            const togglePasswordElements = document.querySelectorAll('.toggle-password');
+
+            togglePasswordElements.forEach(function (toggleEl) {
+                toggleEl.addEventListener('click', function () {
+                    // Find the closest parent wrapper and then pinpoint the matching input
+                    const inputGroup = this.closest('.password-group');
+                    const passwordInput = inputGroup.querySelector('.password-input');
+                    const icon = this.querySelector('i.fas');
+
+                    if (!passwordInput || !icon) return;
+
+                    // Toggle logic
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        passwordInput.type = 'password';
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
+                });
+            });
+        });
+
         function toggleBio() {
             const role = document.querySelector('input[name="role"]:checked').value;
             const bioField = document.getElementById('bioField');

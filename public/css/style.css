@@ -613,3 +613,24 @@ img {
         height: 250px !important;
     }
 }
+
+/* Password Toggle Visibility */
+.password-group .form-control:focus {
+    box-shadow: none; /* Hide default isolated ring */
+    border-color: #86b7fe; /* Default Bootstrap focus blue */
+}
+
+.password-group:focus-within .form-control,
+.password-group:focus-within .input-group-text {
+    border-color: #86b7fe; 
+}
+
+.password-group:focus-within {
+    border-radius: var(--radius-md);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.toggle-password:hover i {
+    color: #495057 !important; /* Darken icon slightly on hover */
+}
