@@ -133,7 +133,7 @@ if (doubleCsrf) {
 
 app.use((req, res, next) => {
     // Skip CSRF for webhook & specific POST routes
-    const skipRoutes = ['/webhook', '/artist/add-artwork', '/auth/login']; // TEMP: skip login to test
+    const skipRoutes = ['/webhook', '/artist/add-artwork', '/artist/profile', '/auth/login']; // TEMP: skip login to test
     if (skipRoutes.includes(req.path) && req.method === 'POST') {
         console.log(`CSRF: Skipping for ${req.path}`);
         return next();

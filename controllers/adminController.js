@@ -162,6 +162,63 @@ exports.toggleArtistStatus = async (req, res) => {
     }
 };
 
+// FR-New: Manage Artworks (List)
+exports.getArtworks = async (req, res) => {
+    try {
+        const artworks = await Artwork.find().populate('artist').sort({ createdAt: -1 });
+        res.render('admin/artworks', { pageTitle: 'Manage Artworks', artworks });
+    } catch (err) {
+        console.error(err);
+        res.redirect('/admin/dashboard');
+    }
+};
+
+// FR-New: Edit Artwork (GET)
+exports.getEditArtwork = async (req, res) => {
+    try {
+        const artwork = await Artwork.findById(req.params.id).populate('artist');
+        if (!artwork) {
+            req.flash('error_msg', 'Artwork not found');
+            return res.redirect('/admin/artworks');
+        }
+        res.render('admin/edit-artwork', { pageTitle: 'Edit Artwork', artwork });
+    } catch (err) {
+        console.error(err);
+        res.redirect('/admin/artworks');
+    }
+};
+
+// FR-New: Edit Artwork (POST)
+exports.postEditArtwork = async (req, res) => {
+    try {
+        const { title, description, price, category, medium, style, sizeCategory, orientation, status } = req.body;
+
+        await Artwork.findByIdAndUpdate(req.params.id, {
+            title, description, price, category, medium, style, sizeCategory, orientation, status
+        });
+
+        req.flash('success_msg', 'Artwork updated successfully');
+        res.redirect('/admin/artworks');
+    } catch (err) {
+        console.error(err);
+        req.flash('error_msg', 'Error updating artwork');
+        res.redirect('/admin/artworks');
+    }
+};
+
+// FR-New: Delete Artwork (POST)
+exports.deleteArtwork = async (req, res) => {
+    try {
+        await Artwork.findByIdAndDelete(req.params.id);
+        req.flash('success_msg', 'Artwork deleted successfully');
+        res.redirect('/admin/artworks');
+    } catch (err) {
+        console.error(err);
+        req.flash('error_msg', 'Error deleting artwork');
+        res.redirect('/admin/artworks');
+    }
+};
+
 // FR-13: All Orders
 exports.getAllOrders = async (req, res) => {
     try {

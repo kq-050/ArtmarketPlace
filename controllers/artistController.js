@@ -2,6 +2,7 @@ const Artwork = require('../models/Artwork');
 const User = require('../models/User');
 const Order = require('../models/Order');
 const Config = require('../models/Config');
+const bcrypt = require('bcryptjs');
 
 exports.getDashboard = async (req, res) => {
     try {
@@ -98,7 +99,7 @@ exports.getProfile = async (req, res) => {
 
 // FR-New: Update Profile
 exports.postProfile = async (req, res) => {
-    const { username, bio, newPassword, confirmPassword } = req.body;
+    const { username, bio, currentPassword, newPassword, confirmPassword } = req.body;
     console.log('DEBUG: postProfile body:', req.body);
     console.log('DEBUG: postProfile file:', req.file);
 
@@ -106,40 +107,40 @@ exports.postProfile = async (req, res) => {
         const user = await User.findById(req.session.user._id);
         console.log('DEBUG: User found:', user._id);
 
-        // Update Basic Info
-        // Check if fields are present in the body before updating
-        if (username !== undefined) user.username = username;
-        if (bio !== undefined) user.bio = bio;
+        let updatedData = {};
+        if (username) updatedData.username = username;
+        if (bio) updatedData.bio = bio;
 
         // Handle Profile Image Upload
         if (req.file) {
-            user.profileImage = `/uploads/${req.file.filename}`;
+            updatedData.profileImage = `/uploads/${req.file.filename}`;
         }
 
         // Handle Password Update
         if (newPassword && newPassword.length > 0) {
-            const { currentPassword } = req.body;
+            if (!currentPassword) {
+                req.flash('error_msg', 'Current password is required to change password');
+                return res.redirect('/artist/profile');
+            }
 
-            // Security: Verify current password if provided (Recommended)
-            // If the UI has a field for existing password, we should verify it.
-            if (currentPassword) {
-                const isMatch = await user.matchPassword(currentPassword);
-                if (!isMatch) {
-                    req.flash('error_msg', 'Current password is incorrect');
-                    return res.redirect('/artist/profile');
-                }
+            const isMatch = await bcrypt.compare(currentPassword, user.password);
+            if (!isMatch) {
+                req.flash('error_msg', 'Current password incorrect');
+                return res.redirect('/artist/profile');
             }
 
             if (newPassword !== confirmPassword) {
                 req.flash('error_msg', 'Passwords do not match');
                 return res.redirect('/artist/profile');
             }
-            user.password = newPassword; // Will be hashed via pre-save hook
+
+            const hashedPassword = await bcrypt.hash(newPassword, 12);
+            updatedData.password = hashedPassword;
         }
 
-        await user.save();
+        const updatedUser = await User.findByIdAndUpdate(req.session.user._id, updatedData, { new: true });
 
-        req.session.user = user; // Update session
+        req.session.user = updatedUser; // Update session
         // Explicitly save session to ensure race conditions don't overwrite the redirect
         req.session.save((err) => {
             if (err) console.error(err);
